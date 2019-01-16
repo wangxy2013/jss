@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_80">
+
+
+        <TextView
+            android:id="@+id/change_text_revenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dm_10"
+            android:layout_marginTop="@dimen/dm_30"
+            android:text="aaaaaa"
+            android:textStyle="bold"
+            android:textSize="@dimen/t16" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:id="@+id/tv_jia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="bbbb"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dm_20"
+                android:textSize="@dimen/t16"
+                android:textStyle="bold"
+                />
+             <TextView
+                 android:id="@+id/tv_storeNums"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="0"
+                 android:layout_toLeftOf="@id/tv_jia"
+                 android:layout_centerVertical="true"
+                 android:textStyle="bold"
+                 android:textSize="@dimen/t16"
+                 android:layout_marginRight="@dimen/t10"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

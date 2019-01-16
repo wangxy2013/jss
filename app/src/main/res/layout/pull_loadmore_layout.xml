@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--SwipeRefreshLayout+RecyclerView   自定义布局-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.jss.sdd.widget.pullRefreshLayout.PullRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/footer_linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dm_100"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/ix"
+                    android:layout_width="@dimen/dm_45"
+                    android:layout_height="@dimen/dm_45"
+                    android:layout_marginRight="@dimen/dm_5"
+                    android:indeterminateDrawable="@drawable/recy_footer_loading_progress" />
+
+
+                <TextView
+                    android:id="@+id/load_more_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="正在加载..."
+                    android:textColor="#8A000000"
+                    android:textSize="@dimen/t18" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/footer_linearlayout" />
+
+        </RelativeLayout>
+    </com.jss.sdd.widget.pullRefreshLayout.PullRefreshLayout>
+</LinearLayout>

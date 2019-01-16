@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+   >
+
+    <com.donkingliang.banner.CustomBanner
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_5"
+        app:indicatorGravity="CENTER"
+        app:indicatorInterval="5dp"
+        app:indicatorSelectRes="@drawable/shape_point_unselect"
+        app:indicatorStyle="ORDINARY"
+        app:indicatorUnSelectRes="@drawable/shape_point_select" />
+</LinearLayout>
