@@ -41,7 +41,7 @@ public abstract class JsonHandler
 
                 JSONObject jsonObject = new JSONObject(jsonString);
 
-                if ("".equals(jsonObject.optString("status")))
+                if ("200".equals(jsonObject.optString("status")))
                 {
                     setResultCode(ConstantUtil.RESULT_SUCCESS);
                 }

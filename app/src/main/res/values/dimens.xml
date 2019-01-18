@@ -35,6 +35,7 @@
     <dimen name="dm_54">54dp</dimen>
     <dimen name="dm_56">56dp</dimen>
     <dimen name="dm_60">60dp</dimen>
+    <dimen name="dm_64">66dp</dimen>
     <dimen name="dm_66">66dp</dimen>
     <dimen name="dm_70">70dp</dimen>
     <dimen name="dm_72">72dp</dimen>
@@ -52,7 +53,12 @@
     <dimen name="dm_217">217dp</dimen>
     <dimen name="dm_280">280dp</dimen>
 
+
+    <dimen name="t6">6sp</dimen>
+    <dimen name="t8">8sp</dimen>
+    <dimen name="t9">9sp</dimen>
     <dimen name="t10">10sp</dimen>
+    <dimen name="t11">11sp</dimen>
     <dimen name="t12">12sp</dimen>
     <dimen name="t14">14sp</dimen>
     <dimen name="t16">16sp</dimen>

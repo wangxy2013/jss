@@ -2,18 +2,489 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-   >
+    android:background="@color/windowBackground"
+    android:orientation="vertical">
 
-    <com.donkingliang.banner.CustomBanner
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.donkingliang.banner.CustomBanner xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dm_5"
+        android:visibility="gone"
         app:indicatorGravity="CENTER"
         app:indicatorInterval="5dp"
         app:indicatorSelectRes="@drawable/shape_point_unselect"
         app:indicatorStyle="ORDINARY"
         app:indicatorUnSelectRes="@drawable/shape_point_select" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/dm_10"
+        android:paddingBottom="@dimen/dm_10">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dm_10"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/rl_jrtj"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_jrtj" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="今日推荐"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_99"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_99" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="9.9包邮"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_jdpt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_jdpt" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="京东拼团"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_jdzy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_jdzy" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="京东自营"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_gybk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_gybk" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="高佣爆款"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dm_10"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/rl_xsms"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_xsms" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="限时秒杀"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_jdps"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_jdps" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="京东配送"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_fxzq"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_fxzq" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="分享赚钱"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_yqhy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_yqhy" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="邀请好友"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_wdqb"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_jx_wdqb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_5"
+                    android:text="我的钱包"
+                    android:textColor="@color/blackC"
+                    android:textSize="@dimen/t12" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dm_15"
+        android:layout_marginTop="@dimen/dm_2"
+        android:layout_marginRight="@dimen/dm_15"
+        android:layout_marginBottom="@dimen/dm_2"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/dm_5">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_headlines" />
+
+        <TextView
+            android:id="@+id/tv_headlines"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dm_10"
+            android:text="头条头条头条头条头他头条"
+            android:textColor="@color/blackB"
+            android:textSize="@dimen/t12" />
+    </LinearLayout>
+
+    <com.donkingliang.banner.CustomBanner xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/middle_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_5"
+        android:visibility="gone"
+        app:indicatorGravity="CENTER"
+        app:indicatorInterval="5dp"
+        app:indicatorSelectRes="@drawable/shape_point_unselect"
+        app:indicatorStyle="ORDINARY"
+        app:indicatorUnSelectRes="@drawable/shape_point_select" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="133dp"
+        android:layout_marginTop="@dimen/dm_5"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_ppsg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/dm_15">
+
+            <RelativeLayout
+                android:id="@+id/rl_ppsg_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+
+
+                <ImageView
+                    android:id="@+id/iv_ppsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_ppsg" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/iv_ppsg"
+                    android:src="@drawable/ic_discount" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_ppsg_top"
+                android:layout_marginLeft="@dimen/dm_30"
+                android:layout_marginRight="@dimen/dm_30"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_hzp1" />
+
+                <ImageView
+
+                    android:id="@+id/iv_ppsg_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_30"
+                    android:src="@drawable/ic_go" />
+
+
+                <TextView
+                    android:layout_width="57dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="@dimen/dm_6"
+                    android:background="@drawable/bg_jx_tips"
+                    android:gravity="center"
+                    android:text="第二件享受半价优惠"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/t6" />
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bg_middle_line" />
+
+        <RelativeLayout
+            android:id="@+id/rl_ms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="@dimen/dm_15">
+
+            <RelativeLayout
+                android:id="@+id/rl_ms_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dm_10">
+
+
+                <ImageView
+                    android:id="@+id/iv_ms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_xsms" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/iv_ms"
+                    android:src="@drawable/ic_discount" />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_ms_top"
+                android:layout_marginLeft="@dimen/dm_10">
+
+
+                <ImageView
+
+                    android:id="@+id/iv_xsms_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dm_30"
+                    android:src="@drawable/ic_go" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dm_30"
+                    android:layout_toRightOf="@+id/iv_xsms_go"
+                    android:src="@drawable/ic_hzp2" />
+
+                <TextView
+                    android:layout_width="57dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="@dimen/dm_6"
+                    android:background="@drawable/bg_jx_tips"
+                    android:gravity="center"
+                    android:text="秒杀价 买三免一"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/t6" />
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_10"
+        android:background="@color/white"
+        android:padding="@dimen/dm_13">
+
+        <TextView
+            android:text="今日推荐"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/t18"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/tv_jrtj"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_mahua"
+            />
+
+        <ImageView
+            android:layout_marginLeft="@dimen/dm_35"
+            android:layout_toLeftOf="@+id/tv_jrtj"
+            android:layout_centerVertical="true"
+            android:src="@drawable/main_bg"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+        <ImageView
+            android:layout_marginRight="@dimen/dm_35"
+            android:layout_toRightOf="@+id/tv_jrtj"
+            android:layout_centerVertical="true"
+            android:src="@drawable/main_bg"
+            android:layout_width="match_parent"
+            android:layout_height="2dp" />
+    </RelativeLayout>
 </LinearLayout>

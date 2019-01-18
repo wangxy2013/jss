@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -249,8 +251,8 @@ public class StringUtils
      */
     public static boolean checkEmail(String email)
     {
-        Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2," +
-                "4}|[0-9]{1,3})(\\]?)$");
+        Pattern pattern = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))" + "" + ""
+                + "([a-zA-Z]{2," + "4}|[0-9]{1,3})(\\]?)$");
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
@@ -911,18 +913,62 @@ public class StringUtils
         return longToTime(date1.getTime() + 5 * 60 * 1000);
     }
 
-    public static List<String> getDiffrent(List<String> list1, List<String> list2) {
+    public static List<String> getDiffrent(List<String> list1, List<String> list2)
+    {
         long st = System.nanoTime();
         List<String> diff = new ArrayList<String>();
-        for(String str:list1)
+        for (String str : list1)
         {
-            if(!list2.contains(str))
+            if (!list2.contains(str))
             {
                 diff.add(str);
             }
         }
-        System.out.println("getDiffrent total times "+(System.nanoTime()-st));
+        System.out.println("getDiffrent total times " + (System.nanoTime() - st));
         return diff;
     }
 
+
+    /**
+     * 获取随机的流水号
+     *
+     * @return
+     */
+    public static String getRandomReqNo(int length)
+    {
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++)
+        {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
+    }
+
+
+    public static String intChange2Str(int number)
+    {
+        String str = "";
+        if (number <= 0)
+        {
+            str = "";
+        }
+        else if (number < 10000)
+        {
+            str = number + "";
+        }
+        else
+        {
+            double d = (double) number;
+            double num = d / 10000;//1.将数字转换成以万为单位的数字
+
+            BigDecimal b = new BigDecimal(num);
+            double f1 = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();//2.转换后的数字四舍五入保留小数点后一位;
+            str = f1 + "万";
+        }
+        return str;
+    }
 }
+

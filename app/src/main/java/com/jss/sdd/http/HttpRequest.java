@@ -162,11 +162,16 @@ public class HttpRequest implements Runnable
 
         String json = valuePair.get("json");
         String encryptID = valuePair.get("encryptID");
+        String sessionId= valuePair.get("sessionId");
         //MediaType  设置Content-Type 标头中包含的媒体类型值
         RequestBody requestBody = FormBody.create(MediaType.parse("application/json; " + "charset=utf-8"), json);
 
         Request request = new Request.Builder().url(urlRequest)//请求的url
-                .post(requestBody).addHeader("Accept", "*/*").addHeader("platform", "3").addHeader("encryptID", encryptID).build();
+                .post(requestBody).addHeader("Accept", "*/*")
+                .addHeader("platform", "3")
+                .addHeader("encryptID", encryptID)
+                .addHeader("session_id", sessionId)
+                .build();
         Response response = okHttpClient.newCall(request).execute();
         return response;
 

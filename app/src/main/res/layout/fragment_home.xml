@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/iv_tab_more"
+            app:tabBackground="@android:color/transparent"
             app:tabGravity="center"
             app:tabIndicatorColor="@color/main_bg"
             app:tabIndicatorHeight="2dp"
@@ -26,6 +27,8 @@
             app:tabTextColor="@color/blackB" />
 
         <ImageView
+            android:layout_marginLeft="@dimen/dm_10"
+            android:layout_marginRight="@dimen/dm_10"
             android:id="@+id/iv_tab_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

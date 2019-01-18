@@ -30,7 +30,7 @@
             android:src="@drawable/ic_search" />
 
         <TextView
-            android:text="请输入您当前要搜索 才商品"
+            android:text="请输入您当前要搜索的商品"
             android:textColor="@color/white"
             android:textSize="@dimen/t12"
             android:layout_marginLeft="@dimen/dm_10"

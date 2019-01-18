@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Sdd</string>
+
+    <string name="seller_number">已售出%1$s件</string>
 </resources>

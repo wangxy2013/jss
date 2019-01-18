@@ -23,6 +23,11 @@ public class Urls
         return HTTP_IP + "/twitter/mobile/login.action";
     }
 
+    //查询商品列表接口【无须登录】
+    public static String getFindMbGoodsListUrl()
+    {
+        return HTTP_IP + "/twitter/malls/findMbGoodsList.action";
+    }
 
 
 }

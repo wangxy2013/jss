@@ -1,7 +1,10 @@
 package com.jss.sdd.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,15 +17,29 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.donkingliang.banner.CustomBanner;
+import com.google.gson.Gson;
 import com.jss.sdd.R;
 import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.entity.GoodsInfo;
+import com.jss.sdd.http.DataRequest;
+import com.jss.sdd.http.HttpRequest;
+import com.jss.sdd.http.IRequestListener;
+import com.jss.sdd.parse.GoodsListHandler;
+import com.jss.sdd.parse.ResultHandler;
+import com.jss.sdd.utils.AESUtils;
 import com.jss.sdd.utils.APPUtils;
+import com.jss.sdd.utils.ConstantUtil;
+import com.jss.sdd.utils.StringUtils;
+import com.jss.sdd.utils.ToastUtil;
+import com.jss.sdd.utils.Urls;
+import com.sdd.jss.swiperecyclerviewlib.SpaceItemDecoration;
 import com.sdd.jss.swiperecyclerviewlib.SwipeItemClickListener;
 import com.sdd.jss.swiperecyclerviewlib.SwipeMenuRecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,21 +48,67 @@ import butterknife.Unbinder;
 /***
  * 精选
  */
-public class CarefullyChosenFragment extends BaseFragment
+public class CarefullyChosenFragment extends BaseFragment implements IRequestListener
 {
 
     private SwipeRefreshLayout mRefreshLayout;
     private SwipeMenuRecyclerView mRecyclerView;
-    private GoodsAdapter mAdapter;
+    private GoodsAdapter mGoodsAdapter;
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
 
-    private CustomBanner mBanner;
-
+    private CustomBanner mTopBanner;
+    private CustomBanner mMiddleBanner;
     private View rootView = null;
     private Unbinder unbinder;
 
+    int pageIndex = 1;    //当前页数
+    int pageSize = 40;   //每页显示个数，默认数为100
+    private List<Integer> mTopBannerList = new ArrayList<>();
+    private List<Integer> middleBannerList = new ArrayList<>();
 
-    private List<Integer> picList = new ArrayList<>();
+
+    private static final String GET_GOODS_LIST_JX = "get_goods_list_jx";
+    private static final int REQUEST_SUCCESS = 0x01;
+    private static final int REQUEST_FAIL = 0x02;
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            super.handleMessage(msg);
+            switch (msg.what)
+            {
+                case REQUEST_SUCCESS:
+
+                    GoodsListHandler mGoodsListHandler = (GoodsListHandler) msg.obj;
+                    if (pageIndex == 1)
+                    {
+                        goodsInfoList.clear();
+                    }
+
+                    goodsInfoList.addAll(mGoodsListHandler.getGoodsInfoList());
+                    mGoodsAdapter.notifyDataSetChanged();
+
+                    if(mGoodsListHandler.getGoodsInfoList().size()<pageSize)
+                    {
+                        mRecyclerView.loadMoreFinish(false, false);
+                    }
+                    else
+                    {
+                        mRecyclerView.loadMoreFinish(false, true);
+                    }
+                    break;
+
+
+                case REQUEST_FAIL:
+                    ToastUtil.show(getActivity(), msg.obj.toString());
+                    break;
+
+            }
+        }
+    };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -81,12 +144,13 @@ public class CarefullyChosenFragment extends BaseFragment
         mRefreshLayout = rootView.findViewById(R.id.refresh_layout);
 
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //        mRecyclerView.addItemDecoration(new DefaultItemDecoration(ContextCompat.getColor(this, R.color.divider_color)));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(20, 20));
         mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
 
         View headerView = getLayoutInflater().inflate(R.layout.layout_jx_top, mRecyclerView, false);
-        mBanner = headerView.findViewById(R.id.banner);
+        mTopBanner = headerView.findViewById(R.id.banner);
+        mMiddleBanner = headerView.findViewById(R.id.middle_banner);
         mRecyclerView.addHeaderView(headerView);
 
     }
@@ -105,8 +169,8 @@ public class CarefullyChosenFragment extends BaseFragment
     {
 
 
-        mAdapter = new GoodsAdapter(goodsInfoList);
-        mRecyclerView.setAdapter(mAdapter);
+        mGoodsAdapter = new GoodsAdapter(goodsInfoList,getActivity());
+        mRecyclerView.setAdapter(mGoodsAdapter);
         initAd();
         // 请求服务器加载数据。
         loadData();
@@ -114,18 +178,19 @@ public class CarefullyChosenFragment extends BaseFragment
 
     private void initAd()
     {
-        picList.add(R.drawable.pic_banner_01);
-        picList.add(R.drawable.pic_banner_02);
-        picList.add(R.drawable.pic_banner_03);
+        mTopBannerList.add(R.drawable.pic_banner_01);
+        mTopBannerList.add(R.drawable.pic_banner_02);
+        mTopBannerList.add(R.drawable.pic_banner_03);
+
         int width = APPUtils.getScreenWidth(getActivity());
         int height = (int) (width * 0.4);
-        if (null == mBanner)
+        if (null == mTopBanner)
         {
             return;
         }
-        mBanner.setLayoutParams(new LinearLayout.LayoutParams(width, height));
-        mBanner.setVisibility(View.VISIBLE);
-        mBanner.setPages(new CustomBanner.ViewCreator<Integer>()
+        mTopBanner.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+        mTopBanner.setVisibility(View.VISIBLE);
+        mTopBanner.setPages(new CustomBanner.ViewCreator<Integer>()
         {
             @Override
             public View createView(Context context, int position)
@@ -140,16 +205,16 @@ public class CarefullyChosenFragment extends BaseFragment
             @Override
             public void updateUI(Context context, View view, int i, Integer integer)
             {
-                ((ImageView) view).setImageResource(picList.get(i));
+                ((ImageView) view).setImageResource(mTopBannerList.get(i));
             }
 
 
-        }, picList);
+        }, mTopBannerList);
 
 
         //设置指示器类型，有普通指示器(ORDINARY)、数字指示器(NUMBER)和没有指示器(NONE)三种类型。
         //这个方法跟在布局中设置app:indicatorStyle是一样的
-        mBanner.setIndicatorStyle(CustomBanner.IndicatorStyle.ORDINARY);
+        mTopBanner.setIndicatorStyle(CustomBanner.IndicatorStyle.ORDINARY);
 
         //设置两个点图片作为翻页指示器，只有指示器为普通指示器(ORDINARY)时有用。
         //这个方法跟在布局中设置app:indicatorSelectRes、app:indicatorUnSelectRes是一样的。
@@ -158,20 +223,20 @@ public class CarefullyChosenFragment extends BaseFragment
 
         //设置指示器的指示点间隔，只有指示器为普通指示器(ORDINARY)时有用。
         //这个方法跟在布局中设置app:indicatorInterval是一样的。
-        mBanner.setIndicatorInterval(20);
+        mTopBanner.setIndicatorInterval(20);
 
         //设置指示器的方向。
         //这个方法跟在布局中设置app:indicatorGravity是一样的。
         //        mBanner.setIndicatorGravity(CustomBanner.IndicatorGravity.CENTER_HORIZONTAL);
         //设置轮播图自动滚动轮播，参数是轮播图滚动的间隔时间
         //轮播图默认是不自动滚动的，如果不调用这个方法，轮播图将不会自动滚动。
-        mBanner.startTurning(5 * 1000);
+        mTopBanner.startTurning(5 * 1000);
 
         //停止轮播图的自动滚动
         // mBanner.stopTurning();
 
         //设置轮播图的滚动速度
-        mBanner.setScrollDuration(500);
+        mTopBanner.setScrollDuration(500);
 
         //设置轮播图的点击事件
         //        mBanner.setOnPageClickListener(new CustomBanner.OnPageClickListener<String>()
@@ -186,6 +251,76 @@ public class CarefullyChosenFragment extends BaseFragment
         //            }
         //        });
 
+        middleBannerList.add(R.drawable.pic_new_user);
+
+        if (null == mTopBanner)
+        {
+            return;
+        }
+        mMiddleBanner.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * 0.26)));
+        mMiddleBanner.setVisibility(View.VISIBLE);
+        mMiddleBanner.setPages(new CustomBanner.ViewCreator<Integer>()
+        {
+            @Override
+            public View createView(Context context, int position)
+            {
+                //这里返回的是轮播图的项的布局 支持任何的布局
+                //position 轮播图的第几个项
+                ImageView imageView = new ImageView(context);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                return imageView;
+            }
+
+            @Override
+            public void updateUI(Context context, View view, int i, Integer integer)
+            {
+                ((ImageView) view).setImageResource(middleBannerList.get(i));
+            }
+
+
+        }, middleBannerList);
+
+
+        //设置指示器类型，有普通指示器(ORDINARY)、数字指示器(NUMBER)和没有指示器(NONE)三种类型。
+        //这个方法跟在布局中设置app:indicatorStyle是一样的
+        mMiddleBanner.setIndicatorStyle(CustomBanner.IndicatorStyle.ORDINARY);
+
+        //设置两个点图片作为翻页指示器，只有指示器为普通指示器(ORDINARY)时有用。
+        //这个方法跟在布局中设置app:indicatorSelectRes、app:indicatorUnSelectRes是一样的。
+        //第一个参数是指示器的选中的样式，第二个参数是指示器的未选中的样式。
+        // mBanner.setIndicatorRes(R.drawable.shape_point_select, R.drawable.shape_point_unselect);
+
+        //设置指示器的指示点间隔，只有指示器为普通指示器(ORDINARY)时有用。
+        //这个方法跟在布局中设置app:indicatorInterval是一样的。
+        mMiddleBanner.setIndicatorInterval(20);
+
+        //设置指示器的方向。
+        //这个方法跟在布局中设置app:indicatorGravity是一样的。
+        //        mBanner.setIndicatorGravity(CustomBanner.IndicatorGravity.CENTER_HORIZONTAL);
+        //设置轮播图自动滚动轮播，参数是轮播图滚动的间隔时间
+        //轮播图默认是不自动滚动的，如果不调用这个方法，轮播图将不会自动滚动。
+        mMiddleBanner.startTurning(10 * 1000);
+
+        //停止轮播图的自动滚动
+        // mBanner.stopTurning();
+
+        //设置轮播图的滚动速度
+        mMiddleBanner.setScrollDuration(500);
+
+        //设置轮播图的点击事件
+        //        mBanner.setOnPageClickListener(new CustomBanner.OnPageClickListener<String>()
+        //        {
+        //            @Override
+        //            public void onPageClick(int position, String str)
+        //            {
+        //                //position 轮播图的第几个项
+        //                //str 轮播图当前项对应的数据
+        ////                AdInfo mAdInfo = adInfoList.get(position);
+        ////                adClick(mAdInfo.getLink());
+        //            }
+        //        });
+
+
     }
 
 
@@ -197,14 +332,7 @@ public class CarefullyChosenFragment extends BaseFragment
         @Override
         public void onRefresh()
         {
-            mRecyclerView.postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    loadData();
-                }
-            }, 1000); // 延时模拟请求服务器。
+            loadData();
         }
     };
 
@@ -216,27 +344,30 @@ public class CarefullyChosenFragment extends BaseFragment
         @Override
         public void onLoadMore()
         {
-            mRecyclerView.postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    List<GoodsInfo> strings = createDataList(mAdapter.getItemCount());
-                    goodsInfoList.addAll(strings);
-                    // notifyItemRangeInserted()或者notifyDataSetChanged().
-                    mAdapter.notifyItemRangeInserted(goodsInfoList.size() - strings.size(), strings.size());
-
-                    // 数据完更多数据，一定要掉用这个方法。
-                    // 第一个参数：表示此次数据是否为空。
-                    // 第二个参数：表示是否还有更多数据。
-                    mRecyclerView.loadMoreFinish(false, true);
-
-                    // 如果加载失败调用下面的方法，传入errorCode和errorMessage。
-                    // errorCode随便传，你自定义LoadMoreView时可以根据errorCode判断错误类型。
-                    // errorMessage是会显示到loadMoreView上的，用户可以看到。
-                    // mRecyclerView.loadMoreError(0, "请求网络失败");
-                }
-            }, 1000);
+            pageIndex += 1;
+            getGoodsRequest();
+            //            mRecyclerView.postDelayed(new Runnable()
+            //            {
+            //                @Override
+            //                public void run()
+            //                {
+            //                    List<GoodsInfo> strings = createDataList(mAdapter.getItemCount());
+            //                    goodsInfoList.addAll(strings);
+            //                    // notifyItemRangeInserted()或者notifyDataSetChanged().
+            //                    mAdapter.notifyItemRangeInserted(goodsInfoList.size() - strings
+            // .size(), strings.size());
+            //
+            //                    // 数据完更多数据，一定要掉用这个方法。
+            //                    // 第一个参数：表示此次数据是否为空。
+            //                    // 第二个参数：表示是否还有更多数据。
+            //                    mRecyclerView.loadMoreFinish(false, true);
+            //
+            //                    // 如果加载失败调用下面的方法，传入errorCode和errorMessage。
+            //                    // errorCode随便传，你自定义LoadMoreView时可以根据errorCode判断错误类型。
+            //                    // errorMessage是会显示到loadMoreView上的，用户可以看到。
+            //                    // mRecyclerView.loadMoreError(0, "请求网络失败");
+            //                }
+            //            }, 1000);
         }
     };
 
@@ -257,23 +388,44 @@ public class CarefullyChosenFragment extends BaseFragment
      */
     private void loadData()
     {
-        goodsInfoList .addAll(createDataList(0));
-        mAdapter.notifyDataSetChanged();
-
-        mRefreshLayout.setRefreshing(false);
-
-        // 第一次加载数据：一定要调用这个方法，否则不会触发加载更多。
-        // 第一个参数：表示此次数据是否为空，假如你请求到的list为空(== null || list.size == 0)，那么这里就要true。
-        // 第二个参数：表示是否还有更多数据，根据服务器返回给你的page等信息判断是否还有更多，这样可以提供性能，如果不能判断则传true。
-        mRecyclerView.loadMoreFinish(false, true);
+        // mAdapter.notifyDataSetChanged();
+        mRefreshLayout.setRefreshing(true);
+        pageIndex = 1;
+        getGoodsRequest();
     }
-    protected List<GoodsInfo> createDataList(int start) {
-        List<GoodsInfo> goodsInfos = new ArrayList<>();
-        for (int i = start; i < start + 100; i++) {
-            goodsInfos.add(new GoodsInfo());
+
+
+    private void getGoodsRequest()
+    {
+        try
+        {
+            //   String encryptStr = "13921408272;iKWne";
+            String mRandomReqNo = StringUtils.getRandomReqNo(32);
+            String encryptStr = mRandomReqNo + System.currentTimeMillis();
+
+            Map<String, String> valuePairs = new HashMap<>();
+            valuePairs.put("malls", "1");
+            valuePairs.put("pageIndex", String.valueOf(pageIndex));
+            valuePairs.put("pageSize", String.valueOf(pageSize));
+            valuePairs.put("label", "14");
+
+            Gson gson = new Gson();
+            Map<String, String> postMap = new HashMap<>();
+            postMap.put("json", gson.toJson(valuePairs));
+
+            postMap.put("sessionId", mRandomReqNo);
+            postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
+            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new
+                    GoodsListHandler());
         }
-        return goodsInfos;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
+
+
     @Override
     public void onDestroy()
     {
@@ -286,4 +438,20 @@ public class CarefullyChosenFragment extends BaseFragment
 
     }
 
+    @Override
+    public void notify(String action, String resultCode, String resultMsg, Object obj)
+    {
+        mRefreshLayout.setRefreshing(false);
+        if (GET_GOODS_LIST_JX.equals(action))
+        {
+            if (ConstantUtil.RESULT_SUCCESS.equals(resultCode))
+            {
+                mHandler.sendMessage(mHandler.obtainMessage(REQUEST_SUCCESS, obj));
+            }
+            else
+            {
+                mHandler.sendMessage(mHandler.obtainMessage(REQUEST_FAIL, resultMsg));
+            }
+        }
+    }
 }
