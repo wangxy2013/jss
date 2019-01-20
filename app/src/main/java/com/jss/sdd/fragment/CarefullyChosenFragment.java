@@ -2,6 +2,7 @@ package com.jss.sdd.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.donkingliang.banner.CustomBanner;
 import com.google.gson.Gson;
 import com.jss.sdd.R;
+import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.entity.GoodsInfo;
 import com.jss.sdd.http.DataRequest;
@@ -53,6 +56,22 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
 
     private SwipeRefreshLayout mRefreshLayout;
     private SwipeMenuRecyclerView mRecyclerView;
+
+    private LinearLayout mJrtjLayout;//今日推荐
+    private LinearLayout mFreeLayout;//99包邮
+    private LinearLayout mJdpgLayout;//京东拼购
+    private LinearLayout mJdzyLayout;//京东自营
+    private LinearLayout mGybkLayout;//高佣爆款
+    private LinearLayout mXsmsLayout;//限时秒杀
+    private LinearLayout mJdpsLayout;//京东配送
+    private LinearLayout mFxzqLayout;//分享赚钱
+    private LinearLayout mYqhyLayout;//邀请好友
+    private LinearLayout mWdqbLayout;//我的钱包
+
+    private RelativeLayout mPpsgLayout;//品牌闪购
+    private RelativeLayout mPpmxLayout;//品牌秒杀
+
+
     private GoodsAdapter mGoodsAdapter;
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
 
@@ -90,7 +109,7 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
                     goodsInfoList.addAll(mGoodsListHandler.getGoodsInfoList());
                     mGoodsAdapter.notifyDataSetChanged();
 
-                    if(mGoodsListHandler.getGoodsInfoList().size()<pageSize)
+                    if (mGoodsListHandler.getGoodsInfoList().size() < pageSize)
                     {
                         mRecyclerView.loadMoreFinish(false, false);
                     }
@@ -111,7 +130,8 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+            savedInstanceState)
     {
 
         if (rootView == null)
@@ -145,12 +165,40 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
 
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(20, 20));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
         mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
 
         View headerView = getLayoutInflater().inflate(R.layout.layout_jx_top, mRecyclerView, false);
-        mTopBanner = headerView.findViewById(R.id.banner);
-        mMiddleBanner = headerView.findViewById(R.id.middle_banner);
+        mTopBanner = (CustomBanner) headerView.findViewById(R.id.banner);
+        mMiddleBanner = (CustomBanner) headerView.findViewById(R.id.middle_banner);
+
+
+        mJrtjLayout = (LinearLayout) headerView.findViewById(R.id.rl_jrtj);
+        mFreeLayout = (LinearLayout) headerView.findViewById(R.id.rl_99);
+        mJdpgLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdps);
+        mJdzyLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdzy);
+        mGybkLayout = (LinearLayout) headerView.findViewById(R.id.rl_gybk);
+        mXsmsLayout = (LinearLayout) headerView.findViewById(R.id.rl_xsms);
+        mJdpsLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdps);
+        mFxzqLayout = (LinearLayout) headerView.findViewById(R.id.rl_fxzq);
+        mYqhyLayout = (LinearLayout) headerView.findViewById(R.id.rl_yqhy);
+        mWdqbLayout = (LinearLayout) headerView.findViewById(R.id.rl_wdqb);
+        mPpsgLayout = (RelativeLayout) headerView.findViewById(R.id.rl_ppsg);
+        mPpmxLayout = (RelativeLayout) headerView.findViewById(R.id.rl_ms);
+
+        mJrtjLayout.setOnClickListener(this);
+        mFreeLayout.setOnClickListener(this);
+        mJdpgLayout.setOnClickListener(this);
+        mJdzyLayout.setOnClickListener(this);
+        mGybkLayout.setOnClickListener(this);
+        mXsmsLayout.setOnClickListener(this);
+        mJdpsLayout.setOnClickListener(this);
+        mFxzqLayout.setOnClickListener(this);
+        mYqhyLayout.setOnClickListener(this);
+        mWdqbLayout.setOnClickListener(this);
+        mPpsgLayout.setOnClickListener(this);
+        mPpmxLayout.setOnClickListener(this);
+
         mRecyclerView.addHeaderView(headerView);
 
     }
@@ -162,6 +210,8 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         mRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
 
+
+
     }
 
     @Override
@@ -169,7 +219,7 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
     {
 
 
-        mGoodsAdapter = new GoodsAdapter(goodsInfoList,getActivity());
+        mGoodsAdapter = new GoodsAdapter(goodsInfoList, getActivity());
         mRecyclerView.setAdapter(mGoodsAdapter);
         initAd();
         // 请求服务器加载数据。
@@ -327,7 +377,8 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
     /**
      * 刷新。
      */
-    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout
+            .OnRefreshListener()
     {
         @Override
         public void onRefresh()
@@ -339,7 +390,8 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
     /**
      * 加载更多。
      */
-    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
+    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView
+            .LoadMoreListener()
     {
         @Override
         public void onLoadMore()
@@ -415,8 +467,8 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
 
             postMap.put("sessionId", mRandomReqNo);
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
-            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new
-                    GoodsListHandler());
+            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this,
+                    HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new GoodsListHandler());
         }
         catch (Exception e)
         {
@@ -425,6 +477,62 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
 
     }
 
+
+    @Override
+    public void onClick(View v)
+    {
+        super.onClick(v);
+
+        if (v == mJrtjLayout)
+        {
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("TYPE",
+                    ConstantUtil.TYPE_JRTJ));
+        }
+        else if (v == mFreeLayout)
+        {
+
+        }
+        else if (v == mJdpgLayout)
+        {
+
+        }
+        else if (v == mJdzyLayout)
+        {
+
+        }
+        else if (v == mGybkLayout)
+        {
+
+        }
+        else if (v == mXsmsLayout)
+        {
+
+        }
+        else if (v == mJdpsLayout)
+        {
+
+        }
+        else if (v == mFxzqLayout)
+        {
+
+        }
+        else if (v == mYqhyLayout)
+        {
+
+        }
+        else if (v == mWdqbLayout)
+        {
+
+        }
+        else if (v == mPpsgLayout)
+        {
+
+        }
+        else if (v == mPpmxLayout)
+        {
+
+        }
+    }
 
     @Override
     public void onDestroy()

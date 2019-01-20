@@ -23,14 +23,14 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsHolder>
     public GoodsAdapter(List<GoodsInfo> list, Context mContext)
     {
         this.list = list;
-        this.mContext =mContext;
+        this.mContext = mContext;
     }
 
     @Override
     public GoodsHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_today_recommend, parent, false);
-        GoodsHolder mHolder = new GoodsHolder(itemView,mContext);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_jx_recommend, parent, false);
+        GoodsHolder mHolder = new GoodsHolder(itemView, mContext);
         return mHolder;
     }
 

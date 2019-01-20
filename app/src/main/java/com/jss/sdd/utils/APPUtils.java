@@ -614,22 +614,6 @@ public class APPUtils
     }
 
 
-    public static void startYgfp(Context mContext)
-    {
-        if (!APPUtils.isAppInstall(mContext, ConstantUtil.THIRD_PACKAGENAME))
-        {
-            if (APPUtils.copyAssetsFile(mContext, ConstantUtil.THIRD_APKNAME,
-                    ConstantUtil.THIRD_PATH))
-            {
-                APPUtils.installApk(mContext, ConstantUtil.THIRD_PATH + ConstantUtil.THIRD_APKNAME, ConstantUtil.THIRD_CLASSNAME);
-            }
-        }
-        else
-        {
-            APPUtils.runApk(mContext, ConstantUtil.THIRD_PACKAGENAME, ConstantUtil.THIRD_CLASSNAME);
-        }
-    }
-
 
     public static int getStatusBarHeight(Context context)
     {

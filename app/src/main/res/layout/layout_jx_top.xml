@@ -5,7 +5,8 @@
     android:background="@color/windowBackground"
     android:orientation="vertical">
 
-    <com.donkingliang.banner.CustomBanner xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.donkingliang.banner.CustomBanner
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

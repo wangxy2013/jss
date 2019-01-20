@@ -17,8 +17,6 @@
     <color name="red">#ff0000</color>
     <color name="grayA">#999999</color>
     <color name="redA">#DE1F27</color>
-    <color name="redB">#9D1C20</color>
-    <color name="redC">#F643BF</color>
     <color name="redD">#FBDAD1</color>
     <color name="blue">#273655</color>
     <color name="blueB">#2BAAA3</color>
@@ -45,7 +43,6 @@
     <color name="emoji_bg">#eaeded</color>
     <color name="item_sign">#4f4665</color>
     <color name="yellow">#FDEC20</color>
-    <color name="orange">#F58E20</color>
     <color name="line">#E5E5E5</color>
 
 
@@ -56,10 +53,8 @@
     <color name="blackC">#4B4B4B</color>
     <color name="blackD">#565656</color>
     <color name="tangerine">#F32E2C</color>
-
-
-
-
+    <color name="orange">#F75921</color>
+    <color name="redC">#DE2828</color>
 
 
 
