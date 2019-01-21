@@ -27,6 +27,8 @@ import com.google.gson.Gson;
 import com.jss.sdd.R;
 import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
+import com.jss.sdd.adapter.GoodsGridAdapter;
+import com.jss.sdd.adapter.GoodsListAdapter;
 import com.jss.sdd.adapter.RecommendAdapter;
 import com.jss.sdd.entity.FilterInfo;
 import com.jss.sdd.entity.GoodsInfo;
@@ -64,7 +66,7 @@ import butterknife.Unbinder;
 /***
  * 母婴
  */
-public  class MotherFragment extends BaseFragment implements IRequestListener
+public class MotherFragment extends BaseFragment implements IRequestListener
 {
 
     private View mTopView;
@@ -95,9 +97,15 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
     private int pageSize = 40;   //每页显示个数，默认数为100
 
     private String sort = "";
+
+
+
     private int mCategoryType = 0;
     private List<Integer> mTopBannerList = new ArrayList<>();
-    private GoodsAdapter mGoodsAdapter;
+    private GoodsGridAdapter mGoodsGridAdapter;
+
+    private GoodsListAdapter mGoodsListAdapter;
+
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
     private FilterPopupWindow mFilterPopupWindow;
     private List<FilterInfo> mFilterList = new ArrayList<>();
@@ -126,17 +134,29 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
                         if (mCategoryType == 1)
                         {
                             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                            mGoodsListAdapter = new GoodsListAdapter(goodsInfoList, getActivity());
+                            mRecyclerView.setAdapter(mGoodsListAdapter);
+
                         }
                         else
                         {
                             mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+                            mGoodsGridAdapter = new GoodsGridAdapter(goodsInfoList, getActivity());
+                            mRecyclerView.setAdapter(mGoodsGridAdapter);
                         }
-
                     }
 
                     goodsInfoList.addAll(mGoodsListHandler.getGoodsInfoList());
-                    updateCategoryType();
-                    mGoodsAdapter.notifyDataSetChanged();
+
+                    if (mCategoryType == 1)
+                    {
+                        mGoodsListAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        mGoodsGridAdapter.notifyDataSetChanged();
+                    }
+
 
                     if (mGoodsListHandler.getGoodsInfoList().size() < pageSize)
                     {
@@ -198,7 +218,7 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
     @Override
     protected void initViews()
     {
-        mTopView=rootView.findViewById(R.id.top_view);
+        mTopView = rootView.findViewById(R.id.top_view);
         mNestedScrollView = rootView.findViewById(R.id.nestedScrollView);
         mRefreshLayout = rootView.findViewById(R.id.refresh_layout);
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
@@ -226,6 +246,9 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
         //top事件
         mCategoryIv.setOnClickListener(this);
         mComprehensiveLayout.setOnClickListener(this);
+        mPriceLayout.setOnClickListener(this);
+
+
 
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
@@ -257,13 +280,7 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
     @Override
     protected void initViewData()
     {
-
-
-        mGoodsAdapter = new GoodsAdapter(goodsInfoList, getActivity());
-        mRecyclerView.setAdapter(mGoodsAdapter);
-
         initAd();
-        // 请求服务器加载数据。
         loadData();
     }
 
@@ -476,7 +493,7 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
                 {
                     if (null != mNestedScrollView.getCurrentlyStickingView())
                     {
-                        mFilterPopupWindow.showAsDropDown(mTopView,40,0);
+                        mFilterPopupWindow.showAsDropDown(mTopView);
                     }
                     else
                     {
@@ -488,16 +505,13 @@ public  class MotherFragment extends BaseFragment implements IRequestListener
 
 
         }
-
-    }
-
-    private void updateCategoryType()
-    {
-        for (int i = 0; i < goodsInfoList.size(); i++)
+        else if(v == mPriceLayout)
         {
-            goodsInfoList.get(i).setCategoryType(mCategoryType);
+
         }
+
     }
+
 
     @Override
     public void onDestroy()

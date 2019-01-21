@@ -12,6 +12,8 @@ import com.jss.sdd.holder.BaseGoodHolder;
 import com.jss.sdd.holder.GoodsGridHolder;
 import com.jss.sdd.holder.GoodsHolder;
 import com.jss.sdd.holder.GoodsListHolder;
+import com.jss.sdd.holder.RecommendGridHolder;
+import com.jss.sdd.holder.RecommendListHolder;
 import com.jss.sdd.listener.MyItemClickListener;
 
 import java.util.List;
@@ -38,11 +40,11 @@ public class RecommendAdapter extends RecyclerView.Adapter<BaseGoodHolder>
         switch (viewType)
         {
             case 0:
-                mGoodsHolder = new GoodsGridHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend_grid, parent, false),
+                mGoodsHolder = new RecommendGridHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend_grid, parent, false),
                         parent.getContext());
                 break;
             case 1:
-                mGoodsHolder = new GoodsListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend_list, parent, false),
+                mGoodsHolder = new RecommendListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recommend_list, parent, false),
                         parent.getContext());
                 break;
 
