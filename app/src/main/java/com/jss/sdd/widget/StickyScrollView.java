@@ -50,6 +50,8 @@ public class StickyScrollView extends NestedScrollView
     private int mShadowHeight;
     private Drawable mShadowDrawable;
 
+
+
     private final Runnable invalidateRunnable = new Runnable()
     {
 
@@ -318,6 +320,7 @@ public class StickyScrollView extends NestedScrollView
         doTheStickyThing();
     }
 
+
     private void doTheStickyThing()
     {
         View viewThatShouldStick = null;
@@ -404,6 +407,11 @@ public class StickyScrollView extends NestedScrollView
         findStickyViews(getChildAt(0));
         doTheStickyThing();
         invalidate();
+    }
+
+    public View getCurrentlyStickingView()
+    {
+        return currentlyStickingView;
     }
 
     private void findStickyViews(View v)

@@ -23,19 +23,19 @@
             tl:tl_indicator_color="@color/main_bg"
             tl:tl_indicator_height="2dp"
             tl:tl_indicator_width_equal_title="true"
+            tl:tl_tab_padding="@dimen/dm_8"
             tl:tl_textSelectColor="@color/main_bg"
-            tl:tl_textUnselectColor="@color/blackB"
-            tl:tl_tab_padding="@dimen/dm_8" />
+            tl:tl_textUnselectColor="@color/blackB" />
 
 
         <ImageView
-            android:layout_marginLeft="@dimen/dm_10"
-            android:layout_marginRight="@dimen/dm_10"
             android:id="@+id/iv_tab_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dm_10"
+            android:layout_marginRight="@dimen/dm_10"
             android:src="@drawable/ic_tab_more" />
     </RelativeLayout>
 

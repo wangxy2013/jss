@@ -1,4 +1,4 @@
-package com.jss.sdd.fragment;
+package com.jss.sdd.fragment.home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,6 +24,7 @@ import com.jss.sdd.R;
 import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.entity.GoodsInfo;
+import com.jss.sdd.fragment.BaseFragment;
 import com.jss.sdd.http.DataRequest;
 import com.jss.sdd.http.HttpRequest;
 import com.jss.sdd.http.IRequestListener;
@@ -51,7 +52,10 @@ import butterknife.Unbinder;
 /***
  * 精选
  */
-public class CarefullyChosenFragment extends BaseFragment implements IRequestListener
+/***
+ * 精选
+ */
+public  class CarefullyChosenFragment extends BaseFragment implements IRequestListener
 {
 
     private SwipeRefreshLayout mRefreshLayout;
@@ -563,3 +567,4 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.jss.sdd.fragment;
+package com.jss.sdd.fragment.home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -27,10 +28,13 @@ import com.jss.sdd.R;
 import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.adapter.RecommendAdapter;
+import com.jss.sdd.entity.FilterInfo;
 import com.jss.sdd.entity.GoodsInfo;
+import com.jss.sdd.fragment.BaseFragment;
 import com.jss.sdd.http.DataRequest;
 import com.jss.sdd.http.HttpRequest;
 import com.jss.sdd.http.IRequestListener;
+import com.jss.sdd.listener.MyItemClickListener;
 import com.jss.sdd.parse.GoodsListHandler;
 import com.jss.sdd.utils.AESUtils;
 import com.jss.sdd.utils.APPUtils;
@@ -40,6 +44,7 @@ import com.jss.sdd.utils.StringUtils;
 import com.jss.sdd.utils.ToastUtil;
 import com.jss.sdd.utils.Urls;
 import com.jss.sdd.widget.StickyScrollView;
+import com.jss.sdd.widget.pop.FilterPopupWindow;
 import com.sdd.jss.swiperecyclerviewlib.SpaceItemDecoration;
 import com.sdd.jss.swiperecyclerviewlib.SwipeItemClickListener;
 import com.sdd.jss.swiperecyclerviewlib.SwipeMenuRecyclerView;
@@ -55,26 +60,47 @@ import butterknife.Unbinder;
 /***
  * 母婴
  */
-public class MotherFragment extends BaseFragment implements IRequestListener
+
+/***
+ * 母婴
+ */
+public  class MotherFragment extends BaseFragment implements IRequestListener
 {
 
+    private View mTopView;
     private StickyScrollView mNestedScrollView;
     private SwipeRefreshLayout mRefreshLayout;
     private SwipeMenuRecyclerView mRecyclerView;
     private CustomBanner mTopBanner;
     private ImageView mCategoryIv;
 
+    private LinearLayout mCategoryLayout;
+    //综合
+    private RelativeLayout mComprehensiveLayout;
+    private ImageView mComprehensiveIv;
 
+    //价格
+    private RelativeLayout mPriceLayout;
+    private ImageView mPriceAesIv;
+    private ImageView mPriceDescIv;
+
+    //销量
+    private RelativeLayout mSalesLayout;
+    private ImageView mSalesAesIv;
+    private ImageView mSalesDescIv;
+
+    private View rootView = null;
+    private Unbinder unbinder;
+    private int pageIndex = 1;    //当前页数
+    private int pageSize = 40;   //每页显示个数，默认数为100
+
+    private String sort = "";
     private int mCategoryType = 0;
     private List<Integer> mTopBannerList = new ArrayList<>();
     private GoodsAdapter mGoodsAdapter;
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
-
-    private View rootView = null;
-    private Unbinder unbinder;
-
-    private int pageIndex = 1;    //当前页数
-    private int pageSize = 40;   //每页显示个数，默认数为100
+    private FilterPopupWindow mFilterPopupWindow;
+    private List<FilterInfo> mFilterList = new ArrayList<>();
 
     private boolean isLoading;
     private static final String GET_GOODS_LIST_JX = "get_goods_list_mother";
@@ -163,30 +189,44 @@ public class MotherFragment extends BaseFragment implements IRequestListener
     @Override
     protected void initData()
     {
-
+        mFilterList.add(new FilterInfo("综合", "2"));
+        mFilterList.add(new FilterInfo("优惠券面值由高到低", "2"));
+        mFilterList.add(new FilterInfo("优惠券面值由低到高", "2"));
+        mFilterList.add(new FilterInfo("预估收益由高到低", "2"));
     }
 
     @Override
     protected void initViews()
     {
+        mTopView=rootView.findViewById(R.id.top_view);
         mNestedScrollView = rootView.findViewById(R.id.nestedScrollView);
         mRefreshLayout = rootView.findViewById(R.id.refresh_layout);
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
         mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-        //        View headerView = getLayoutInflater().inflate(R.layout.layout_mother_top, mRecyclerView, false);
         mTopBanner = (CustomBanner) rootView.findViewById(R.id.banner);
         mCategoryIv = (ImageView) rootView.findViewById(R.id.iv_category);
+        mCategoryLayout = (LinearLayout) rootView.findViewById(R.id.ll_category);
+        mComprehensiveLayout = (RelativeLayout) rootView.findViewById(R.id.rl_comprehensive);
+        mComprehensiveIv = (ImageView) rootView.findViewById(R.id.iv_comprehensive);
+        mPriceLayout = (RelativeLayout) rootView.findViewById(R.id.rl_price);
+        mPriceAesIv = (ImageView) rootView.findViewById(R.id.iv_price_asc);
+        mPriceDescIv = (ImageView) rootView.findViewById(R.id.iv_price_desc);
+        mSalesLayout = (RelativeLayout) rootView.findViewById(R.id.rl_sales);
+        mSalesAesIv = (ImageView) rootView.findViewById(R.id.iv_sales_asc);
+        mSalesDescIv = (ImageView) rootView.findViewById(R.id.iv_sales_desc);
 
-        //        mRecyclerView.addHeaderView(headerView);
 
     }
 
     @Override
     protected void initEvent()
     {
+        //top事件
         mCategoryIv.setOnClickListener(this);
+        mComprehensiveLayout.setOnClickListener(this);
+
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         mRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
@@ -347,7 +387,6 @@ public class MotherFragment extends BaseFragment implements IRequestListener
      */
     private void loadData()
     {
-        // mAdapter.notifyDataSetChanged();
         mRefreshLayout.setRefreshing(true);
         pageIndex = 1;
         getGoodsRequest();
@@ -406,6 +445,48 @@ public class MotherFragment extends BaseFragment implements IRequestListener
                 loadData();
 
             }
+        }
+        else if (v == mComprehensiveLayout)//综合
+        {
+            if (null == mFilterPopupWindow)
+            {
+                mFilterPopupWindow = new FilterPopupWindow(getContext(), mFilterList, new MyItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(View view, int position)
+                    {
+                        sort = mFilterList.get(pageIndex).getSort();
+                    }
+                });
+
+                mFilterPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener()
+                {
+                    @Override
+                    public void onDismiss()
+                    {
+                        mComprehensiveIv.setImageResource(R.drawable.ic_arrow_down_normal);
+                    }
+                });
+            }
+
+            mHandler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if (null != mNestedScrollView.getCurrentlyStickingView())
+                    {
+                        mFilterPopupWindow.showAsDropDown(mTopView,40,0);
+                    }
+                    else
+                    {
+                        mFilterPopupWindow.showAsDropDown(mCategoryLayout);
+                    }
+                    mComprehensiveIv.setImageResource(R.drawable.ic_arrow_up_selected);
+                }
+            });
+
+
         }
 
     }

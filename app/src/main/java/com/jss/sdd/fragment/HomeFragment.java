@@ -1,7 +1,6 @@
 package com.jss.sdd.fragment;
 
 import android.annotation.SuppressLint;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +16,9 @@ import android.widget.TextView;
 
 import com.flyco.tablayout.SlidingTabLayout;
 import com.jss.sdd.R;
+import com.jss.sdd.fragment.home.CarefullyChosenFragment;
+import com.jss.sdd.fragment.home.LikeFragment;
+import com.jss.sdd.fragment.home.MotherFragment;
 import com.jss.sdd.http.IRequestListener;
 import com.jss.sdd.utils.ToastUtil;
 
