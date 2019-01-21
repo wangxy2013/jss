@@ -188,7 +188,6 @@
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dm_1"
         android:layout_below="@+id/ll_top"
         android:layout_above="@+id/ll_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

@@ -53,6 +53,7 @@ public class GoodsInfo
     private int isFreeFreightRisk = 0;//是否支持运费险 0 否 1 是
     private long addtime = 0L;//创建时间
     private long modifytime = 0L;//修改时间
+    private int categoryType;
 
 
     public long getId()
@@ -563,5 +564,16 @@ public class GoodsInfo
     public void setModifytime(long modifytime)
     {
         this.modifytime = modifytime;
+    }
+
+
+    public int getCategoryType()
+    {
+        return categoryType;
+    }
+
+    public void setCategoryType(int categoryType)
+    {
+        this.categoryType = categoryType;
     }
 }

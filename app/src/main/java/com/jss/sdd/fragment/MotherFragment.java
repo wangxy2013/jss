@@ -1,38 +1,45 @@
-package com.jss.sdd.activity;
+package com.jss.sdd.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.donkingliang.banner.CustomBanner;
 import com.google.gson.Gson;
 import com.jss.sdd.R;
+import com.jss.sdd.activity.RecommendActivity;
+import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.adapter.RecommendAdapter;
 import com.jss.sdd.entity.GoodsInfo;
 import com.jss.sdd.http.DataRequest;
 import com.jss.sdd.http.HttpRequest;
 import com.jss.sdd.http.IRequestListener;
-import com.jss.sdd.listener.MyItemClickListener;
 import com.jss.sdd.parse.GoodsListHandler;
 import com.jss.sdd.utils.AESUtils;
 import com.jss.sdd.utils.APPUtils;
 import com.jss.sdd.utils.ConstantUtil;
+import com.jss.sdd.utils.LogUtil;
 import com.jss.sdd.utils.StringUtils;
 import com.jss.sdd.utils.ToastUtil;
 import com.jss.sdd.utils.Urls;
-import com.jss.sdd.widget.statusbar.StatusBarUtil;
+import com.jss.sdd.widget.StickyScrollView;
 import com.sdd.jss.swiperecyclerviewlib.SpaceItemDecoration;
 import com.sdd.jss.swiperecyclerviewlib.SwipeItemClickListener;
 import com.sdd.jss.swiperecyclerviewlib.SwipeMenuRecyclerView;
@@ -42,60 +49,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import butterknife.Unbinder;
 
-/**
- * 9.9包邮
+/***
+ * 母婴
  */
-public class RecommendActivity extends BaseActivity implements IRequestListener
+public class MotherFragment extends BaseFragment implements IRequestListener
 {
-    @BindView(R.id.iv_back)
-    ImageView ivBack;
-    @BindView(R.id.iv_title)
-    ImageView ivTitle;
-    @BindView(R.id.banner)
-    CustomBanner mTopBanner;
-    @BindView(R.id.rl_comprehensive)
-    RelativeLayout rlComprehensive;
-    @BindView(R.id.iv_price_up)
-    ImageView ivPriceUp;
-    @BindView(R.id.iv_price_desc)
-    ImageView ivPriceDesc;
-    @BindView(R.id.rl_price)
-    RelativeLayout rlPrice;
-    @BindView(R.id.tv_sales)
-    TextView tvSales;
-    @BindView(R.id.iv_sales_up)
-    ImageView ivSalesUp;
-    @BindView(R.id.iv_sales_desc)
-    ImageView ivSalesDesc;
-    @BindView(R.id.rl_sales)
-    RelativeLayout rlSales;
-    @BindView(R.id.recycler_view)
-    SwipeMenuRecyclerView mRecyclerView;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout mRefreshLayout;
-    @BindView(R.id.tv_extension)
-    TextView tvExtension;
-    @BindView(R.id.tv_share)
-    TextView tvShare;
-    @BindView(R.id.iv_category)
-    ImageView ivCategory;
+
+    private StickyScrollView mNestedScrollView;
+    private SwipeRefreshLayout mRefreshLayout;
+    private SwipeMenuRecyclerView mRecyclerView;
+    private CustomBanner mTopBanner;
+    private ImageView mCategoryIv;
 
 
     private int mCategoryType = 0;
     private List<Integer> mTopBannerList = new ArrayList<>();
-    int pageIndex = 1;    //当前页数
-    int pageSize = 40;   //每页显示个数，默认数为100
-
-    private RecommendAdapter mGoodsAdapter;
+    private GoodsAdapter mGoodsAdapter;
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
 
-    private static final String GET_GOODS_LIST_JX = "get_goods_list_jx";
+    private View rootView = null;
+    private Unbinder unbinder;
+
+    private int pageIndex = 1;    //当前页数
+    private int pageSize = 40;   //每页显示个数，默认数为100
+
+    private boolean isLoading;
+    private static final String GET_GOODS_LIST_JX = "get_goods_list_mother";
     private static final int REQUEST_SUCCESS = 0x01;
     private static final int REQUEST_FAIL = 0x02;
+    private static final int UPDATE_LOAD_STATUS = 0x03;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler()
     {
@@ -114,11 +99,11 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
 
                         if (mCategoryType == 1)
                         {
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(RecommendActivity.this));
+                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         }
                         else
                         {
-                            mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
+                            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
                         }
 
                     }
@@ -135,16 +120,45 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
                     {
                         mRecyclerView.loadMoreFinish(false, true);
                     }
+
+                    mHandler.sendEmptyMessageDelayed(UPDATE_LOAD_STATUS, 1000);
                     break;
 
 
                 case REQUEST_FAIL:
-                    ToastUtil.show(RecommendActivity.this, msg.obj.toString());
+                    ToastUtil.show(getActivity(), msg.obj.toString());
+                    break;
+
+                case UPDATE_LOAD_STATUS:
+                    isLoading = false;
                     break;
 
             }
         }
     };
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+
+        if (rootView == null)
+        {
+            rootView = inflater.inflate(R.layout.fragment_mother, null);
+            unbinder = ButterKnife.bind(this, rootView);
+            initData();
+            initViews();
+            initEvent();
+            initViewData();
+
+        }
+        ViewGroup parent = (ViewGroup) rootView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(rootView);
+        }
+        return rootView;
+    }
 
     @Override
     protected void initData()
@@ -153,29 +167,59 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
     }
 
     @Override
-    protected void initViews(Bundle savedInstanceState)
+    protected void initViews()
     {
-        setContentView(R.layout.activity_recomend);
-        StatusBarUtil.setStatusBarBackground(this, R.drawable.activity_main_bg);
-        StatusBarUtil.StatusBarLightMode(RecommendActivity.this, false);
+        mNestedScrollView = rootView.findViewById(R.id.nestedScrollView);
+        mRefreshLayout = rootView.findViewById(R.id.refresh_layout);
+        mRecyclerView = rootView.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
+        mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        //        View headerView = getLayoutInflater().inflate(R.layout.layout_mother_top, mRecyclerView, false);
+        mTopBanner = (CustomBanner) rootView.findViewById(R.id.banner);
+        mCategoryIv = (ImageView) rootView.findViewById(R.id.iv_category);
+
+        //        mRecyclerView.addHeaderView(headerView);
+
     }
 
     @Override
     protected void initEvent()
     {
+        mCategoryIv.setOnClickListener(this);
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         mRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
+        mRecyclerView.setNestedScrollingEnabled(false);
+        //        mRecyclerView.setHasFixedSize(true);
+        mNestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener()
+        {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY)
+            {
+
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
+                {
+                    //底部加载
+
+                    if (!isLoading)
+                    {
+                        mRecyclerView.dispatchLoadMore();
+                    }
+                }
+            }
+        });
+
 
     }
+
 
     @Override
     protected void initViewData()
     {
-        mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
-        mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-        mGoodsAdapter = new RecommendAdapter(goodsInfoList, RecommendActivity.this);
+
+
+        mGoodsAdapter = new GoodsAdapter(goodsInfoList, getActivity());
         mRecyclerView.setAdapter(mGoodsAdapter);
 
         initAd();
@@ -183,60 +227,13 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
         loadData();
     }
 
-
-
-    private void updateCategoryType()
-    {
-        for (int i = 0; i < goodsInfoList.size(); i++)
-        {
-            goodsInfoList.get(i).setCategoryType(mCategoryType);
-        }
-    }
-
-    /**
-     * 刷新。
-     */
-    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
-    {
-        @Override
-        public void onRefresh()
-        {
-            loadData();
-        }
-    };
-
-    /**
-     * 加载更多。
-     */
-    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
-    {
-        @Override
-        public void onLoadMore()
-        {
-            pageIndex += 1;
-            getGoodsRequest();
-        }
-    };
-
-    /**
-     * Item点击监听。
-     */
-    private SwipeItemClickListener mItemClickListener = new SwipeItemClickListener()
-    {
-        @Override
-        public void onItemClick(View itemView, int position)
-        {
-
-        }
-    };
-
     private void initAd()
     {
         mTopBannerList.add(R.drawable.pic_banner_01);
         mTopBannerList.add(R.drawable.pic_banner_02);
         mTopBannerList.add(R.drawable.pic_banner_03);
 
-        int width = APPUtils.getScreenWidth(RecommendActivity.this);
+        int width = APPUtils.getScreenWidth(getActivity());
         int height = (int) (width * 0.4);
         if (null == mTopBanner)
         {
@@ -305,7 +302,45 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
         //            }
         //        });
 
+
     }
+
+    /**
+     * 刷新。
+     */
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
+    {
+        @Override
+        public void onRefresh()
+        {
+            loadData();
+        }
+    };
+
+    /**
+     * 加载更多。
+     */
+    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
+    {
+        @Override
+        public void onLoadMore()
+        {
+            pageIndex += 1;
+            getGoodsRequest();
+        }
+    };
+
+    /**
+     * Item点击监听。
+     */
+    private SwipeItemClickListener mItemClickListener = new SwipeItemClickListener()
+    {
+        @Override
+        public void onItemClick(View itemView, int position)
+        {
+            Toast.makeText(getActivity(), "第" + position + "个", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /**
      * 第一次加载数据。
@@ -323,6 +358,7 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
     {
         try
         {
+            isLoading = true;
             //   String encryptStr = "13921408272;iKWne";
             String mRandomReqNo = StringUtils.getRandomReqNo(32);
             String encryptStr = mRandomReqNo + System.currentTimeMillis();
@@ -339,8 +375,8 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
 
             postMap.put("sessionId", mRandomReqNo);
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
-            DataRequest.instance().request(RecommendActivity.this, Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX,
-                    postMap, new GoodsListHandler());
+            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new
+                    GoodsListHandler());
         }
         catch (Exception e)
         {
@@ -349,10 +385,56 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
 
     }
 
+
+    @Override
+    public void onClick(View v)
+    {
+        super.onClick(v);
+        if (v == mCategoryIv)
+        {
+            if (mCategoryType == 0)
+            {
+                mCategoryType = 1;
+                mCategoryIv.setImageResource(R.drawable.ic_category_grid);
+                loadData();
+
+            }
+            else
+            {
+                mCategoryType = 0;
+                mCategoryIv.setImageResource(R.drawable.ic_category_list);
+                loadData();
+
+            }
+        }
+
+    }
+
+    private void updateCategoryType()
+    {
+        for (int i = 0; i < goodsInfoList.size(); i++)
+        {
+            goodsInfoList.get(i).setCategoryType(mCategoryType);
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if (null != unbinder)
+        {
+            unbinder.unbind();
+            unbinder = null;
+        }
+
+    }
+
     @Override
     public void notify(String action, String resultCode, String resultMsg, Object obj)
     {
         mRefreshLayout.setRefreshing(false);
+
         if (GET_GOODS_LIST_JX.equals(action))
         {
             if (ConstantUtil.RESULT_SUCCESS.equals(resultCode))
@@ -361,46 +443,9 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
             }
             else
             {
+                isLoading = false;
                 mHandler.sendMessage(mHandler.obtainMessage(REQUEST_FAIL, resultMsg));
             }
-        }
-    }
-
-
-    @OnClick({R.id.iv_back, R.id.iv_category, R.id.rl_comprehensive, R.id.rl_price, R.id.rl_sales, R.id.tv_extension, R.id.tv_share})
-    public void onViewClicked(View view)
-    {
-        switch (view.getId())
-        {
-            case R.id.iv_back:
-                break;
-            case R.id.iv_category:
-
-                if (mCategoryType == 0)
-                {
-                    mCategoryType = 1;
-                    ivCategory.setImageResource(R.drawable.ic_category_grid);
-                    loadData();
-
-                }
-                else
-                {
-                    mCategoryType = 0;
-                    ivCategory.setImageResource(R.drawable.ic_category_list);
-                    loadData();
-
-                }
-                break;
-            case R.id.rl_comprehensive:
-                break;
-            case R.id.rl_price:
-                break;
-            case R.id.rl_sales:
-                break;
-            case R.id.tv_extension:
-                break;
-            case R.id.tv_share:
-                break;
         }
     }
 }

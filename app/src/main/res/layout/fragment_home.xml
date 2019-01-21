@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tl="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -13,19 +13,20 @@
         android:layout_height="40dp"
         android:background="@color/white">
 
-        <android.support.design.widget.TabLayout
+        <com.flyco.tablayout.SlidingTabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
             android:layout_toLeftOf="@+id/iv_tab_more"
-            app:tabBackground="@color/transparent"
-            app:tabRippleColor="@color/transparent"
-            app:tabGravity="center"
-            app:tabIndicatorColor="@color/main_bg"
-            app:tabIndicatorHeight="2dp"
-            app:tabSelectedTextColor="@color/main_bg"
-            app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
-            app:tabTextColor="@color/blackB" />
+            android:background="@color/transparent"
+            tl:tl_indicator_color="@color/main_bg"
+            tl:tl_indicator_height="2dp"
+            tl:tl_indicator_width_equal_title="true"
+            tl:tl_textSelectColor="@color/main_bg"
+            tl:tl_textUnselectColor="@color/blackB"
+            tl:tl_tab_padding="@dimen/dm_8" />
+
 
         <ImageView
             android:layout_marginLeft="@dimen/dm_10"

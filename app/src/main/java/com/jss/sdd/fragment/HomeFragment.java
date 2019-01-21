@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.flyco.tablayout.SlidingTabLayout;
 import com.jss.sdd.R;
 import com.jss.sdd.http.IRequestListener;
 import com.jss.sdd.utils.ToastUtil;
@@ -32,7 +33,7 @@ public class HomeFragment extends BaseFragment implements IRequestListener
 {
 
     @BindView(R.id.tabLayout)
-    TabLayout mTabLayout;
+    SlidingTabLayout mTabLayout;
     @BindView(R.id.viewpager)
     ViewPager mViewpager;
 
@@ -109,8 +110,8 @@ public class HomeFragment extends BaseFragment implements IRequestListener
     {
         String tabTitles[] = new String[]{"精选", "猜你喜欢", "母婴", "食品", "女装", "洗护", "内衣", "百货", "家电", "家居", "数码"};
         mList.add(new CarefullyChosenFragment());
-        mList.add(new TestFragment());
-        mList.add(new TestFragment());
+        mList.add(new LikeFragment());
+        mList.add(new MotherFragment());
         mList.add(new TestFragment());
         mList.add(new TestFragment());
         mList.add(new TestFragment());
@@ -127,11 +128,12 @@ public class HomeFragment extends BaseFragment implements IRequestListener
         mMyFragmentAdapter = new MyFragmentAdapter(getChildFragmentManager(), tabTitles, mList);
         //绑定FragmentAdapter
         mViewpager.setAdapter(mMyFragmentAdapter);
-        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        //绑定ViewPager
-        mTabLayout.setupWithViewPager(mViewpager);
-
-        setIndicatorWidth(mTabLayout,30);
+        mTabLayout.setViewPager(mViewpager);
+//        mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+//        //绑定ViewPager
+//        mTabLayout.setupWithViewPager(mViewpager);
+//
+//        setIndicatorWidth(mTabLayout,30);
 
     }
 

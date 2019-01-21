@@ -2,17 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:layout_marginBottom="@dimen/dm_7"
-    android:paddingBottom="@dimen/dm_10"
-    android:orientation="vertical">
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/dm_10">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_goods_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pic_goods" />
 
 
-    <ImageView
-        android:id="@+id/iv_goods_img"
-        android:layout_width="168dp"
-        android:layout_height="168dp"
-        android:src="@drawable/pic_goods" />
+        <ImageView
+            android:id="@+id/iv_choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dm_5"
+            android:src="@drawable/ic_choose_selector" />
+    </RelativeLayout>
 
 
     <TextView
@@ -20,9 +32,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dm_5"
-        android:textColor="@color/blackD"
-        android:maxLines="2"
         android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/blackD"
         android:textSize="@dimen/t10" />
 
 
@@ -37,10 +49,10 @@
             android:id="@+id/tv_coupon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="18dp"
             android:background="@drawable/bg_coupon"
             android:gravity="center"
             android:text="劵:99.99"
-            android:layout_marginRight="18dp"
             android:textColor="@color/white"
             android:textSize="@dimen/t10" />
 
