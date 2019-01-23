@@ -55,6 +55,7 @@ public class GoodsInfo
     private long modifytime = 0L;//修改时间
     private int categoryType;
 
+    private boolean isSelected;
 
     public long getId()
     {
@@ -575,5 +576,15 @@ public class GoodsInfo
     public void setCategoryType(int categoryType)
     {
         this.categoryType = categoryType;
+    }
+
+    public boolean isSelected()
+    {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected)
+    {
+        isSelected = selected;
     }
 }

@@ -5,21 +5,23 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.donkingliang.banner.CustomBanner;
 import com.google.gson.Gson;
 import com.jss.sdd.R;
-import com.jss.sdd.adapter.RecommendAdapter;
+import com.jss.sdd.adapter.RecommendGridAdapter;
+import com.jss.sdd.adapter.RecommendListAdapter;
+import com.jss.sdd.entity.FilterInfo;
 import com.jss.sdd.entity.GoodsInfo;
 import com.jss.sdd.http.DataRequest;
 import com.jss.sdd.http.HttpRequest;
@@ -32,6 +34,8 @@ import com.jss.sdd.utils.ConstantUtil;
 import com.jss.sdd.utils.StringUtils;
 import com.jss.sdd.utils.ToastUtil;
 import com.jss.sdd.utils.Urls;
+import com.jss.sdd.widget.StickyScrollView;
+import com.jss.sdd.widget.pop.FilterPopupWindow;
 import com.jss.sdd.widget.statusbar.StatusBarUtil;
 import com.sdd.jss.swiperecyclerviewlib.SpaceItemDecoration;
 import com.sdd.jss.swiperecyclerviewlib.SwipeItemClickListener;
@@ -42,60 +46,65 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * 9.9包邮
  */
 public class RecommendActivity extends BaseActivity implements IRequestListener
 {
-    @BindView(R.id.iv_back)
-    ImageView ivBack;
-    @BindView(R.id.iv_title)
-    ImageView ivTitle;
-    @BindView(R.id.banner)
-    CustomBanner mTopBanner;
-    @BindView(R.id.rl_comprehensive)
-    RelativeLayout rlComprehensive;
-    @BindView(R.id.iv_price_up)
-    ImageView ivPriceUp;
-    @BindView(R.id.iv_price_desc)
-    ImageView ivPriceDesc;
-    @BindView(R.id.rl_price)
-    RelativeLayout rlPrice;
-    @BindView(R.id.tv_sales)
-    TextView tvSales;
-    @BindView(R.id.iv_sales_up)
-    ImageView ivSalesUp;
-    @BindView(R.id.iv_sales_desc)
-    ImageView ivSalesDesc;
-    @BindView(R.id.rl_sales)
-    RelativeLayout rlSales;
-    @BindView(R.id.recycler_view)
-    SwipeMenuRecyclerView mRecyclerView;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout mRefreshLayout;
-    @BindView(R.id.tv_extension)
-    TextView tvExtension;
-    @BindView(R.id.tv_share)
-    TextView tvShare;
-    @BindView(R.id.iv_category)
-    ImageView ivCategory;
+    private View mTopView;
 
+    private ImageView mBackIv;
+    private ImageView mTitleIv;
+
+    private StickyScrollView mNestedScrollView;
+    private SwipeRefreshLayout mRefreshLayout;
+    private SwipeMenuRecyclerView mRecyclerView;
+    private CustomBanner mTopBanner;
+    private ImageView mCategoryIv;
+
+    private LinearLayout mCategoryLayout;
+    //综合
+    private RelativeLayout mComprehensiveLayout;
+    private ImageView mComprehensiveIv;
+
+    //价格
+    private RelativeLayout mPriceLayout;
+    private ImageView mPriceAesIv;
+    private ImageView mPriceDescIv;
+
+    //销量
+    private RelativeLayout mSalesLayout;
+    private ImageView mSalesAesIv;
+    private ImageView mSalesDescIv;
+
+    private int pageIndex = 1;    //当前页数
+    private int pageSize = 40;   //每页显示个数，默认数为100
+
+    //排序类型： 1 上新 (默认)   2 综合   3 销量【30天引入量】  4 佣金比   5 价格【券后价】  6 预估佣金 7 优惠券面值  注：【综合排序包含：2、6、7】
+    private String sort = "2";
+    private static final String TYPE_DESC = "desc";
+    private static final String TYPE_ASC = "asc";
+    private String type = TYPE_DESC;
+
+    private String label = "14";
 
     private int mCategoryType = 0;
     private List<Integer> mTopBannerList = new ArrayList<>();
-    int pageIndex = 1;    //当前页数
-    int pageSize = 40;   //每页显示个数，默认数为100
+    private RecommendGridAdapter mGoodsGridAdapter;
+    private RecommendListAdapter mGoodsListAdapter;
 
-    private RecommendAdapter mGoodsAdapter;
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
+    private FilterPopupWindow mFilterPopupWindow;
+    private List<FilterInfo> mFilterList = new ArrayList<>();
 
-    private static final String GET_GOODS_LIST_JX = "get_goods_list_jx";
+    private List<ImageView> mArrowList = new ArrayList<>();
+
+    private boolean isLoading;
+    private static final String GET_GOODS_LIST_JX = "get_goods_list_mother";
     private static final int REQUEST_SUCCESS = 0x01;
     private static final int REQUEST_FAIL = 0x02;
+    private static final int UPDATE_LOAD_STATUS = 0x03;
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler()
     {
@@ -111,21 +120,19 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
                     if (pageIndex == 1)
                     {
                         goodsInfoList.clear();
-
-                        if (mCategoryType == 1)
-                        {
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(RecommendActivity.this));
-                        }
-                        else
-                        {
-                            mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
-                        }
-
                     }
 
                     goodsInfoList.addAll(mGoodsListHandler.getGoodsInfoList());
-                    updateCategoryType();
-                    mGoodsAdapter.notifyDataSetChanged();
+
+                    if (mCategoryType == 1)
+                    {
+                        mGoodsListAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        mGoodsGridAdapter.notifyDataSetChanged();
+                    }
+
 
                     if (mGoodsListHandler.getGoodsInfoList().size() < pageSize)
                     {
@@ -135,6 +142,8 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
                     {
                         mRecyclerView.loadMoreFinish(false, true);
                     }
+
+                    mHandler.sendEmptyMessageDelayed(UPDATE_LOAD_STATUS, 1000);
                     break;
 
 
@@ -142,14 +151,23 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
                     ToastUtil.show(RecommendActivity.this, msg.obj.toString());
                     break;
 
+                case UPDATE_LOAD_STATUS:
+                    isLoading = false;
+                    break;
+
             }
         }
     };
 
+
     @Override
     protected void initData()
     {
-
+        mFilterList.add(new FilterInfo("综合排序", "2"));
+        mFilterList.add(new FilterInfo("优惠券面值由高到低", "7"));
+        mFilterList.add(new FilterInfo("优惠券面值由低到高", "7"));
+        mFilterList.add(new FilterInfo("预估收益由高到低", "6"));
+        label = getIntent().getStringExtra("LABEL");
     }
 
     @Override
@@ -158,77 +176,89 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
         setContentView(R.layout.activity_recomend);
         StatusBarUtil.setStatusBarBackground(this, R.drawable.activity_main_bg);
         StatusBarUtil.StatusBarLightMode(RecommendActivity.this, false);
+
+        mBackIv = (ImageView) findViewById(R.id.iv_back);
+        mTitleIv = (ImageView) findViewById(R.id.iv_title);
+        mTopView = findViewById(R.id.top_view);
+        mNestedScrollView = findViewById(R.id.nestedScrollView);
+        mRefreshLayout = findViewById(R.id.refresh_layout);
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
+        mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
+        mTopBanner = (CustomBanner) findViewById(R.id.banner);
+        mCategoryIv = (ImageView) findViewById(R.id.iv_category);
+        mCategoryLayout = (LinearLayout) findViewById(R.id.ll_category);
+        mComprehensiveLayout = (RelativeLayout) findViewById(R.id.rl_comprehensive);
+        mComprehensiveIv = (ImageView) findViewById(R.id.iv_comprehensive);
+        mPriceLayout = (RelativeLayout) findViewById(R.id.rl_price);
+        mPriceAesIv = (ImageView) findViewById(R.id.iv_price_asc);
+        mPriceDescIv = (ImageView) findViewById(R.id.iv_price_desc);
+        mSalesLayout = (RelativeLayout) findViewById(R.id.rl_sales);
+        mSalesAesIv = (ImageView) findViewById(R.id.iv_sales_asc);
+        mSalesDescIv = (ImageView) findViewById(R.id.iv_sales_desc);
+
+        mArrowList.add(mPriceAesIv);
+        mArrowList.add(mPriceDescIv);
+        mArrowList.add(mSalesAesIv);
+        mArrowList.add(mSalesDescIv);
     }
 
     @Override
     protected void initEvent()
     {
+        //top事件
+        mCategoryIv.setOnClickListener(this);
+        mComprehensiveLayout.setOnClickListener(this);
+        mPriceLayout.setOnClickListener(this);
+        mSalesLayout.setOnClickListener(this);
+
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         mRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
+        mRecyclerView.setNestedScrollingEnabled(false);
+        //        mRecyclerView.setHasFixedSize(true);
+        mNestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener()
+        {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY)
+            {
+
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()))
+                {
+                    //底部加载
+
+                    if (!isLoading)
+                    {
+                        mRecyclerView.dispatchLoadMore();
+                    }
+                }
+            }
+        });
 
     }
 
     @Override
     protected void initViewData()
     {
-        mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
-        mRecyclerView.addItemDecoration(new SpaceItemDecoration(10, 0));
-        mRecyclerView.useDefaultLoadMore(); // 使用默认的加载更多的View。
-        mGoodsAdapter = new RecommendAdapter(goodsInfoList, RecommendActivity.this);
-        mRecyclerView.setAdapter(mGoodsAdapter);
-
+        //99包邮
+        if (ConstantUtil.LABEL_99.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_99);
+        }
+        else if (ConstantUtil.LABEL_JDPG.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_jdpg);
+        }
+        else if (ConstantUtil.LABEL_JRTJ.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_jrtj);
+        }
+        updateType();
         initAd();
-        // 请求服务器加载数据。
         loadData();
     }
 
-
-
-    private void updateCategoryType()
-    {
-        for (int i = 0; i < goodsInfoList.size(); i++)
-        {
-            goodsInfoList.get(i).setCategoryType(mCategoryType);
-        }
-    }
-
-    /**
-     * 刷新。
-     */
-    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
-    {
-        @Override
-        public void onRefresh()
-        {
-            loadData();
-        }
-    };
-
-    /**
-     * 加载更多。
-     */
-    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
-    {
-        @Override
-        public void onLoadMore()
-        {
-            pageIndex += 1;
-            getGoodsRequest();
-        }
-    };
-
-    /**
-     * Item点击监听。
-     */
-    private SwipeItemClickListener mItemClickListener = new SwipeItemClickListener()
-    {
-        @Override
-        public void onItemClick(View itemView, int position)
-        {
-
-        }
-    };
 
     private void initAd()
     {
@@ -305,14 +335,51 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
         //            }
         //        });
 
+
     }
+
+    /**
+     * 刷新。
+     */
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
+    {
+        @Override
+        public void onRefresh()
+        {
+            loadData();
+        }
+    };
+
+    /**
+     * 加载更多。
+     */
+    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
+    {
+        @Override
+        public void onLoadMore()
+        {
+            pageIndex += 1;
+            getGoodsRequest();
+        }
+    };
+
+    /**
+     * Item点击监听。
+     */
+    private SwipeItemClickListener mItemClickListener = new SwipeItemClickListener()
+    {
+        @Override
+        public void onItemClick(View itemView, int position)
+        {
+            Toast.makeText(RecommendActivity.this, "第" + position + "个", Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /**
      * 第一次加载数据。
      */
     private void loadData()
     {
-        // mAdapter.notifyDataSetChanged();
         mRefreshLayout.setRefreshing(true);
         pageIndex = 1;
         getGoodsRequest();
@@ -323,6 +390,7 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
     {
         try
         {
+            isLoading = true;
             //   String encryptStr = "13921408272;iKWne";
             String mRandomReqNo = StringUtils.getRandomReqNo(32);
             String encryptStr = mRandomReqNo + System.currentTimeMillis();
@@ -331,12 +399,17 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
             valuePairs.put("malls", "1");
             valuePairs.put("pageIndex", String.valueOf(pageIndex));
             valuePairs.put("pageSize", String.valueOf(pageSize));
+            //valuePairs.put("label", label);
+
+            //TODO 正式时替换
             valuePairs.put("label", "14");
+            valuePairs.put("sort", sort);
+            valuePairs.put("type", type);
+
 
             Gson gson = new Gson();
             Map<String, String> postMap = new HashMap<>();
             postMap.put("json", gson.toJson(valuePairs));
-
             postMap.put("sessionId", mRandomReqNo);
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
             DataRequest.instance().request(RecommendActivity.this, Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX,
@@ -349,10 +422,230 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
 
     }
 
+
+    @Override
+    public void onClick(View v)
+    {
+        super.onClick(v);
+        if (v == mBackIv)
+        {
+            finish();
+        }
+        else if (v == mCategoryIv)
+        {
+            if (mCategoryType == 0)
+            {
+                mCategoryType = 1;
+                mCategoryIv.setImageResource(R.drawable.ic_category_grid);
+                updateType();
+            }
+            else
+            {
+                mCategoryType = 0;
+                mCategoryIv.setImageResource(R.drawable.ic_category_list);
+                updateType();
+            }
+        }
+        else if (v == mComprehensiveLayout)//综合
+        {
+            updateArrowStatus(-99);
+            if (null == mFilterPopupWindow)
+            {
+                mFilterPopupWindow = new FilterPopupWindow(RecommendActivity.this, mFilterList, new MyItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(View view, int position)
+                    {
+                        sort = mFilterList.get(position).getSort();
+
+                        //优惠劵由低到高
+                        if (position == 2)
+                        {
+                            type = "asc";
+                        }
+                        else
+                        {
+                            type = "desc";
+                        }
+                        loadData();
+
+                    }
+                });
+
+                mFilterPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener()
+                {
+                    @Override
+                    public void onDismiss()
+                    {
+                        mComprehensiveIv.setImageResource(R.drawable.ic_arrow_down_normal);
+
+
+                    }
+                });
+            }
+
+            mHandler.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if (null != mNestedScrollView.getCurrentlyStickingView())
+                    {
+                        mFilterPopupWindow.showAsDropDown(mTopView);
+                    }
+                    else
+                    {
+                        mFilterPopupWindow.showAsDropDown(mCategoryLayout);
+                    }
+                    mComprehensiveIv.setImageResource(R.drawable.ic_arrow_up_selected);
+                }
+            });
+
+
+        }
+        else if (v == mPriceLayout)
+        {
+            initFilterPopupWindowStatus();
+            //券后价格
+            sort = "5";
+
+            if (mPriceDescIv.isSelected())
+            {
+                updateArrowStatus(0);
+                type = TYPE_ASC;
+            }
+            else if (mPriceAesIv.isSelected())
+            {
+                updateArrowStatus(1);
+                type = TYPE_DESC;
+            }
+            else
+            {
+                updateArrowStatus(1);
+                type = TYPE_DESC;
+            }
+
+            loadData();
+        }
+        else if (v == mSalesLayout)
+        {
+            initFilterPopupWindowStatus();
+            //券后价格
+            sort = "3";
+
+            if (mSalesDescIv.isSelected())
+            {
+                updateArrowStatus(2);
+                type = TYPE_ASC;
+
+            }
+            else if (mSalesAesIv.isSelected())
+            {
+                updateArrowStatus(3);
+                type = TYPE_DESC;
+            }
+            else
+            {
+                updateArrowStatus(3);
+                type = TYPE_DESC;
+            }
+
+            loadData();
+        }
+    }
+
+    private void updateType()
+    {
+        if (mCategoryType == 1)
+        {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(RecommendActivity.this));
+            mGoodsListAdapter = new RecommendListAdapter(goodsInfoList, RecommendActivity.this, new MyItemClickListener()
+            {
+                @Override
+                public void onItemClick(View view, int position)
+                {
+                    updateSelected(position);
+
+                }
+            });
+            mRecyclerView.setAdapter(mGoodsListAdapter);
+
+        }
+        else
+        {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(RecommendActivity.this, 2));
+            mGoodsGridAdapter = new RecommendGridAdapter(goodsInfoList, RecommendActivity.this, new MyItemClickListener()
+            {
+                @Override
+                public void onItemClick(View view, int position)
+                {
+                    updateSelected(position);
+                }
+            });
+            mRecyclerView.setAdapter(mGoodsGridAdapter);
+        }
+    }
+
+
+    private void updateSelected(int position)
+    {
+        if (goodsInfoList.get(position).isSelected())
+        {
+            goodsInfoList.get(position).setSelected(false);
+        }
+        else
+        {
+            goodsInfoList.get(position).setSelected(true);
+        }
+
+        if (mCategoryType == 1)
+        {
+            mGoodsListAdapter.notifyItemChanged(position);
+        }
+        else
+        {
+            mGoodsGridAdapter.notifyItemChanged(position);
+        }
+    }
+
+    private void initFilterPopupWindowStatus()
+    {
+        mFilterPopupWindow = null;
+        for (int i = 0; i < mFilterList.size(); i++)
+        {
+            mFilterList.get(i).setSelected(false);
+        }
+    }
+
+
+    private void updateArrowStatus(int p)
+    {
+        for (int i = 0; i < mArrowList.size(); i++)
+        {
+            if (i == p)
+            {
+                mArrowList.get(p).setSelected(true);
+            }
+            else
+            {
+                mArrowList.get(i).setSelected(false);
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+
+    }
+
     @Override
     public void notify(String action, String resultCode, String resultMsg, Object obj)
     {
         mRefreshLayout.setRefreshing(false);
+
         if (GET_GOODS_LIST_JX.equals(action))
         {
             if (ConstantUtil.RESULT_SUCCESS.equals(resultCode))
@@ -361,46 +654,9 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
             }
             else
             {
+                isLoading = false;
                 mHandler.sendMessage(mHandler.obtainMessage(REQUEST_FAIL, resultMsg));
             }
-        }
-    }
-
-
-    @OnClick({R.id.iv_back, R.id.iv_category, R.id.rl_comprehensive, R.id.rl_price, R.id.rl_sales, R.id.tv_extension, R.id.tv_share})
-    public void onViewClicked(View view)
-    {
-        switch (view.getId())
-        {
-            case R.id.iv_back:
-                break;
-            case R.id.iv_category:
-
-                if (mCategoryType == 0)
-                {
-                    mCategoryType = 1;
-                    ivCategory.setImageResource(R.drawable.ic_category_grid);
-                    loadData();
-
-                }
-                else
-                {
-                    mCategoryType = 0;
-                    ivCategory.setImageResource(R.drawable.ic_category_list);
-                    loadData();
-
-                }
-                break;
-            case R.id.rl_comprehensive:
-                break;
-            case R.id.rl_price:
-                break;
-            case R.id.rl_sales:
-                break;
-            case R.id.tv_extension:
-                break;
-            case R.id.tv_share:
-                break;
         }
     }
 }

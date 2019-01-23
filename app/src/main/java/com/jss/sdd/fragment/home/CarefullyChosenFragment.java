@@ -179,7 +179,7 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
 
         mJrtjLayout = (LinearLayout) headerView.findViewById(R.id.rl_jrtj);
         mFreeLayout = (LinearLayout) headerView.findViewById(R.id.rl_99);
-        mJdpgLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdps);
+        mJdpgLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdpg);
         mJdzyLayout = (LinearLayout) headerView.findViewById(R.id.rl_jdzy);
         mGybkLayout = (LinearLayout) headerView.findViewById(R.id.rl_gybk);
         mXsmsLayout = (LinearLayout) headerView.findViewById(R.id.rl_xsms);
@@ -489,16 +489,18 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
 
         if (v == mJrtjLayout)
         {
-            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("TYPE",
-                    ConstantUtil.TYPE_JRTJ));
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
+                    ConstantUtil.LABEL_JRTJ));
         }
         else if (v == mFreeLayout)
         {
-
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
+                    ConstantUtil.LABEL_99));
         }
         else if (v == mJdpgLayout)
         {
-
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
+                    ConstantUtil.LABEL_JDPG));
         }
         else if (v == mJdzyLayout)
         {

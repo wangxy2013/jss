@@ -18,19 +18,19 @@ public class ConstantUtil
 
 
     //今日推荐
-    public static final String TYPE_JRTJ = "TYPE_JRTJ";
+    public static final String  LABEL_JRTJ = "10";
     //99包邮
-    public static final String TYPE_99 = "TYPE_99";
+    public static final String  LABEL_99 = " 15";
     //京东拼购
-    public static final String TYPE_JTPG = "TYPE_JTPG";
+    public static final String  LABEL_JDPG = " LABEL_JTPG";
     //京东自营
-    public static final String TYPE_JDZY = "TYPE_JDZY";
+    public static final String  LABEL_JDZY = " LABEL_JDZY";
     //高佣爆款
-    public static final String TYPE_GYBK = "TYPE_GYBK";
+    public static final String  LABEL_GYBK = " 18";
     //限时秒杀
-    public static final String TYPE_XSMS = "TYPE_XSMS";
+    public static final String  LABEL_XSMS = " LABEL_XSMS";
     //京东配送
-    public static final String TYPE_JDPS = "TYPE_JDPS";
+    public static final String  LABEL_JDPS = " 17";
 
 
     public static final String[][] CATEGORY_NAME = {

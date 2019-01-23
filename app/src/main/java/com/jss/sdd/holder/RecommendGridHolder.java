@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.jss.sdd.R;
 import com.jss.sdd.entity.GoodsInfo;
+import com.jss.sdd.listener.MyItemClickListener;
 import com.jss.sdd.utils.StringUtils;
 
 
@@ -22,6 +23,7 @@ public class RecommendGridHolder extends BaseGoodHolder
 {
 
     private Context mContext;
+    private ImageView mSelectedIv;
     private ImageView mFreePostageIv;
     private ImageView mGroupBuyIv;
     private ImageView mGoodsImg;
@@ -31,11 +33,13 @@ public class RecommendGridHolder extends BaseGoodHolder
     private TextView mNewPriceTv;
     private TextView mCostPriceTv;
     private TextView mNumberTv;
-
-    public RecommendGridHolder(View rootView, Context mContext)
+    private MyItemClickListener listener;
+    public RecommendGridHolder(View rootView, Context mContext,MyItemClickListener listener)
     {
         super(rootView);
         this.mContext = mContext;
+        this.listener = listener;
+        mSelectedIv = (ImageView) rootView.findViewById(R.id.iv_choose);
         mGoodsNameTv = (TextView) rootView.findViewById(R.id.tv_goods_name);
         mCouponTv = (TextView) rootView.findViewById(R.id.tv_coupon);
         mCommissionTv = (TextView) rootView.findViewById(R.id.tv_commission);
@@ -49,7 +53,7 @@ public class RecommendGridHolder extends BaseGoodHolder
     }
 
     @Override
-    public void setGoodsInfo(GoodsInfo mGoodsInfo, int p)
+    public void setGoodsInfo(GoodsInfo mGoodsInfo, final int p)
     {
         Glide.with(mContext).load(mGoodsInfo.getPiclink()).into(mGoodsImg);
         SpannableString spannableString = new SpannableString("  " + mGoodsInfo.getTitle());
@@ -108,6 +112,17 @@ public class RecommendGridHolder extends BaseGoodHolder
 
         mCostPriceTv.getPaint().setAntiAlias(true);//抗锯齿
         mCostPriceTv.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);  // 设置中划线并加清晰
+
+        mSelectedIv.setSelected(mGoodsInfo.isSelected());
+
+        mSelectedIv.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                listener.onItemClick(v,p);
+            }
+        });
     }
 
 
