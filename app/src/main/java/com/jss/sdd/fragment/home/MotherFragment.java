@@ -96,9 +96,13 @@ public class MotherFragment extends BaseFragment implements IRequestListener
     private int pageIndex = 1;    //当前页数
     private int pageSize = 40;   //每页显示个数，默认数为100
 
-    private String sort = "";
+    //排序类型： 1 上新 (默认)   2 综合   3 销量【30天引入量】  4 佣金比   5 价格【券后价】  6 预估佣金 7 优惠券面值  注：【综合排序包含：2、6、7】
+    private String sort = "2";
+    private static final String TYPE_DESC = "desc";
+    private static final String TYPE_ASC = "asc";
+    private String type = TYPE_DESC;
 
-
+    private String label = "14";
 
     private int mCategoryType = 0;
     private List<Integer> mTopBannerList = new ArrayList<>();
@@ -109,6 +113,8 @@ public class MotherFragment extends BaseFragment implements IRequestListener
     private List<GoodsInfo> goodsInfoList = new ArrayList<>();
     private FilterPopupWindow mFilterPopupWindow;
     private List<FilterInfo> mFilterList = new ArrayList<>();
+
+    private List<ImageView> mArrowList = new ArrayList<>();
 
     private boolean isLoading;
     private static final String GET_GOODS_LIST_JX = "get_goods_list_mother";
@@ -130,20 +136,6 @@ public class MotherFragment extends BaseFragment implements IRequestListener
                     if (pageIndex == 1)
                     {
                         goodsInfoList.clear();
-
-                        if (mCategoryType == 1)
-                        {
-                            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                            mGoodsListAdapter = new GoodsListAdapter(goodsInfoList, getActivity());
-                            mRecyclerView.setAdapter(mGoodsListAdapter);
-
-                        }
-                        else
-                        {
-                            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-                            mGoodsGridAdapter = new GoodsGridAdapter(goodsInfoList, getActivity());
-                            mRecyclerView.setAdapter(mGoodsGridAdapter);
-                        }
                     }
 
                     goodsInfoList.addAll(mGoodsListHandler.getGoodsInfoList());
@@ -209,10 +201,10 @@ public class MotherFragment extends BaseFragment implements IRequestListener
     @Override
     protected void initData()
     {
-        mFilterList.add(new FilterInfo("综合", "2"));
-        mFilterList.add(new FilterInfo("优惠券面值由高到低", "2"));
-        mFilterList.add(new FilterInfo("优惠券面值由低到高", "2"));
-        mFilterList.add(new FilterInfo("预估收益由高到低", "2"));
+        mFilterList.add(new FilterInfo("综合排序", "2"));
+        mFilterList.add(new FilterInfo("优惠券面值由高到低", "7"));
+        mFilterList.add(new FilterInfo("优惠券面值由低到高", "7"));
+        mFilterList.add(new FilterInfo("预估收益由高到低", "6"));
     }
 
     @Override
@@ -237,7 +229,10 @@ public class MotherFragment extends BaseFragment implements IRequestListener
         mSalesAesIv = (ImageView) rootView.findViewById(R.id.iv_sales_asc);
         mSalesDescIv = (ImageView) rootView.findViewById(R.id.iv_sales_desc);
 
-
+        mArrowList.add(mPriceAesIv);
+        mArrowList.add(mPriceDescIv);
+        mArrowList.add(mSalesAesIv);
+        mArrowList.add(mSalesDescIv);
     }
 
     @Override
@@ -247,8 +242,7 @@ public class MotherFragment extends BaseFragment implements IRequestListener
         mCategoryIv.setOnClickListener(this);
         mComprehensiveLayout.setOnClickListener(this);
         mPriceLayout.setOnClickListener(this);
-
-
+        mSalesLayout.setOnClickListener(this);
 
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
@@ -280,6 +274,7 @@ public class MotherFragment extends BaseFragment implements IRequestListener
     @Override
     protected void initViewData()
     {
+        updateType();
         initAd();
         loadData();
     }
@@ -423,12 +418,14 @@ public class MotherFragment extends BaseFragment implements IRequestListener
             valuePairs.put("malls", "1");
             valuePairs.put("pageIndex", String.valueOf(pageIndex));
             valuePairs.put("pageSize", String.valueOf(pageSize));
-            valuePairs.put("label", "14");
+            valuePairs.put("label", label);
+            valuePairs.put("sort", sort);
+            valuePairs.put("type", type);
+
 
             Gson gson = new Gson();
             Map<String, String> postMap = new HashMap<>();
             postMap.put("json", gson.toJson(valuePairs));
-
             postMap.put("sessionId", mRandomReqNo);
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
             DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new
@@ -452,19 +449,18 @@ public class MotherFragment extends BaseFragment implements IRequestListener
             {
                 mCategoryType = 1;
                 mCategoryIv.setImageResource(R.drawable.ic_category_grid);
-                loadData();
-
+                updateType();
             }
             else
             {
                 mCategoryType = 0;
                 mCategoryIv.setImageResource(R.drawable.ic_category_list);
-                loadData();
-
+                updateType();
             }
         }
         else if (v == mComprehensiveLayout)//综合
         {
+            updateArrowStatus(-99);
             if (null == mFilterPopupWindow)
             {
                 mFilterPopupWindow = new FilterPopupWindow(getContext(), mFilterList, new MyItemClickListener()
@@ -472,7 +468,19 @@ public class MotherFragment extends BaseFragment implements IRequestListener
                     @Override
                     public void onItemClick(View view, int position)
                     {
-                        sort = mFilterList.get(pageIndex).getSort();
+                        sort = mFilterList.get(position).getSort();
+
+                        //优惠劵由低到高
+                        if (position == 2)
+                        {
+                            type = "asc";
+                        }
+                        else
+                        {
+                            type = "desc";
+                        }
+                        loadData();
+
                     }
                 });
 
@@ -482,6 +490,8 @@ public class MotherFragment extends BaseFragment implements IRequestListener
                     public void onDismiss()
                     {
                         mComprehensiveIv.setImageResource(R.drawable.ic_arrow_down_normal);
+
+
                     }
                 });
             }
@@ -505,13 +515,99 @@ public class MotherFragment extends BaseFragment implements IRequestListener
 
 
         }
-        else if(v == mPriceLayout)
+        else if (v == mPriceLayout)
         {
+            initFilterPopupWindowStatus();
+            //券后价格
+            sort = "5";
 
+            if (mPriceDescIv.isSelected())
+            {
+                updateArrowStatus(0);
+                type = TYPE_ASC;
+            }
+            else if (mPriceAesIv.isSelected())
+            {
+                updateArrowStatus(1);
+                type = TYPE_DESC;
+            }
+            else
+            {
+                updateArrowStatus(1);
+                type = TYPE_DESC;
+            }
+
+            loadData();
         }
+        else if (v == mSalesLayout)
+        {
+            initFilterPopupWindowStatus();
+            //券后价格
+            sort = "3";
 
+            if (mSalesDescIv.isSelected())
+            {
+                updateArrowStatus(2);
+                type = TYPE_ASC;
+
+            }
+            else if (mSalesAesIv.isSelected())
+            {
+                updateArrowStatus(3);
+                type = TYPE_DESC;
+            }
+            else
+            {
+                updateArrowStatus(3);
+                type = TYPE_DESC;
+            }
+
+            loadData();
+        }
     }
 
+    private void updateType()
+    {
+        if (mCategoryType == 1)
+        {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mGoodsListAdapter = new GoodsListAdapter(goodsInfoList, getActivity());
+            mRecyclerView.setAdapter(mGoodsListAdapter);
+
+        }
+        else
+        {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            mGoodsGridAdapter = new GoodsGridAdapter(goodsInfoList, getActivity());
+            mRecyclerView.setAdapter(mGoodsGridAdapter);
+        }
+    }
+
+
+    private void initFilterPopupWindowStatus()
+    {
+        mFilterPopupWindow = null;
+        for (int i = 0; i < mFilterList.size(); i++)
+        {
+            mFilterList.get(i).setSelected(false);
+        }
+    }
+
+
+    private void updateArrowStatus(int p)
+    {
+        for (int i = 0; i < mArrowList.size(); i++)
+        {
+            if (i == p)
+            {
+                mArrowList.get(p).setSelected(true);
+            }
+            else
+            {
+                mArrowList.get(i).setSelected(false);
+            }
+        }
+    }
 
     @Override
     public void onDestroy()

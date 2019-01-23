@@ -1,6 +1,7 @@
 package com.jss.sdd.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.view.View;
@@ -60,20 +61,27 @@ public class MainActivity extends BaseActivity
         fragmentList.add(new CategoryFragment());
         fragmentList.add(new InvitationFragment());
         fragmentList.add(new MineFragment());
-
         fragmentTabHost.setup(this, getSupportFragmentManager(), R.id.main_layout);
 
-        for (int i = 0; i < texts.length; i++)
+        new Handler().post(new Runnable()
         {
-            TabHost.TabSpec spec = fragmentTabHost.newTabSpec(texts[i]).setIndicator(getView(i));
+            @Override
+            public void run()
+            {
+                for (int i = 0; i < texts.length; i++)
+                {
+                    TabHost.TabSpec spec = fragmentTabHost.newTabSpec(texts[i]).setIndicator(getView(i));
 
-            fragmentTabHost.addTab(spec, fragmentList.get(i).getClass(), null);
+                    fragmentTabHost.addTab(spec, fragmentList.get(i).getClass(), null);
 
-            //设置背景(必须在addTab之后，由于需要子节点（底部菜单按钮）否则会出现空指针异常)
-            // fragmentTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable
-            // .main_tab_selector);
-        }
-        fragmentTabHost.getTabWidget().setDividerDrawable(R.color.transparent);
+                    //设置背景(必须在addTab之后，由于需要子节点（底部菜单按钮）否则会出现空指针异常)
+                    // fragmentTabHost.getTabWidget().getChildAt(i).setBackgroundResource(R.drawable
+                    // .main_tab_selector);
+                }
+                fragmentTabHost.getTabWidget().setDividerDrawable(R.color.transparent);
+            }
+        });
+
     }
 
     private View getView(int i)

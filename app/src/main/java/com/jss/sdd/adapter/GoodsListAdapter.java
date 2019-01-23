@@ -51,4 +51,7 @@ public class GoodsListAdapter extends RecyclerView.Adapter<BaseGoodHolder>
     {
         return list.size();
     }
+
+
+
 }

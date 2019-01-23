@@ -115,7 +115,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="5dp"
-                            android:src="@drawable/ic_arrow_up_normal" />
+                            android:src="@drawable/ic_arrow_up_selector" />
 
                         <ImageView
                             android:id="@+id/iv_price_desc"
@@ -123,7 +123,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="5dp"
-                            android:src="@drawable/ic_arrow_down_normal" />
+                            android:src="@drawable/ic_arrow_down_selector" />
                     </LinearLayout>
 
                 </RelativeLayout>
@@ -157,7 +157,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="5dp"
-                            android:src="@drawable/ic_arrow_up_normal" />
+                            android:src="@drawable/ic_arrow_up_selector" />
 
                         <ImageView
                             android:id="@+id/iv_sales_desc"
@@ -165,7 +165,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="5dp"
-                            android:src="@drawable/ic_arrow_down_normal" />
+                            android:src="@drawable/ic_arrow_down_selector" />
                     </LinearLayout>
                 </RelativeLayout>
 
