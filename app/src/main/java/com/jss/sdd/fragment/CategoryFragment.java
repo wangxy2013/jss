@@ -1,6 +1,7 @@
 package com.jss.sdd.fragment;
 
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,8 +10,13 @@ import android.view.ViewGroup;
 
 import com.jss.sdd.R;
 import com.jss.sdd.adapter.CategoryOneAdapter;
+import com.jss.sdd.adapter.CategoryTwoAdapter;
 import com.jss.sdd.entity.CategoryInfo;
 import com.jss.sdd.listener.MyItemClickListener;
+import com.jss.sdd.utils.ConstantUtil;
+import com.jss.sdd.utils.LogUtil;
+import com.jss.sdd.utils.ToastUtil;
+import com.sdd.jss.swiperecyclerviewlib.SpaceItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +35,15 @@ public class CategoryFragment extends BaseFragment
     private View rootView = null;
     private Unbinder unbinder;
 
-    private List<CategoryInfo> categoryInfoList = new ArrayList<>();
+    private List<CategoryInfo> categoryOneList = new ArrayList<>();
     private CategoryOneAdapter mCategoryOneAdapter;
+
+    private List<CategoryInfo> categoryTwoList = new ArrayList<>();
+    private CategoryTwoAdapter mCategoryTwoAdapter;
+
+
+    private List<List<CategoryInfo>> categoryList = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -57,14 +70,13 @@ public class CategoryFragment extends BaseFragment
     protected void initData()
     {
         String[] categroyOneNameArr = getResources().getStringArray(R.array.category_one_name);
-        String[] categroyOneIdArr = getResources().getStringArray(R.array.category_one_id);
 
 
         for (int i = 0; i < categroyOneNameArr.length; i++)
         {
             CategoryInfo mCategoryInfo = new CategoryInfo();
 
-            if(i==0)
+            if (i == 0)
             {
                 mCategoryInfo.setSelected(true);
             }
@@ -73,8 +85,32 @@ public class CategoryFragment extends BaseFragment
                 mCategoryInfo.setSelected(false);
             }
             mCategoryInfo.setName(categroyOneNameArr[i]);
-            mCategoryInfo.setId(categroyOneIdArr[i]);
-            categoryInfoList.add(mCategoryInfo);
+            categoryOneList.add(mCategoryInfo);
+        }
+
+
+        String[][] categroyTwoName = ConstantUtil.CATEGORY_NAME;
+        String[][] categroyTwoId = ConstantUtil.CATEGORY_ID;
+
+        for (int i = 0; i < categroyTwoName.length; i++)
+        {
+            LogUtil.e("TAG", "i-->" + i);
+            List<CategoryInfo> categoryInfos = new ArrayList<>();
+            for (int j = 0; j < categroyTwoName[i].length; j++)
+            {
+                CategoryInfo mCategoryInfo = new CategoryInfo();
+                mCategoryInfo.setId(categroyTwoId[i][j]);
+                mCategoryInfo.setName(categroyTwoName[i][j]);
+                categoryInfos.add(mCategoryInfo);
+            }
+            categoryList.add(categoryInfos);
+        }
+
+
+        if (!categoryList.isEmpty())
+        {
+            categoryTwoList.clear();
+            categoryTwoList.addAll(categoryList.get(0));
         }
     }
 
@@ -95,28 +131,45 @@ public class CategoryFragment extends BaseFragment
     {
 
         rvLabelOne.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCategoryOneAdapter = new CategoryOneAdapter(categoryInfoList, new MyItemClickListener()
+        mCategoryOneAdapter = new CategoryOneAdapter(categoryOneList, new MyItemClickListener()
         {
             @Override
             public void onItemClick(View view, int position)
             {
-                for (int i = 0; i < categoryInfoList.size(); i++)
+                categoryTwoList.clear();
+                categoryTwoList.addAll(categoryList.get(position));
+                mCategoryTwoAdapter.notifyDataSetChanged();
+
+                for (int i = 0; i < categoryOneList.size(); i++)
                 {
                     if (position == i)
                     {
-                        categoryInfoList.get(position).setSelected(true);
+                        categoryOneList.get(position).setSelected(true);
                     }
                     else
                     {
-                        categoryInfoList.get(i).setSelected(false);
+                        categoryOneList.get(i).setSelected(false);
                     }
                 }
                 mCategoryOneAdapter.notifyDataSetChanged();
             }
         });
         rvLabelOne.setAdapter(mCategoryOneAdapter);
-    }
 
+
+        rvLabelTwo.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        rvLabelTwo.addItemDecoration(new SpaceItemDecoration(10, 0));
+
+        mCategoryTwoAdapter = new CategoryTwoAdapter(categoryTwoList, new MyItemClickListener()
+        {
+            @Override
+            public void onItemClick(View view, int position)
+            {
+                ToastUtil.show(getActivity(), categoryTwoList.get(position).getId());
+            }
+        });
+        rvLabelTwo.setAdapter(mCategoryTwoAdapter);
+    }
 
 
     @Override
