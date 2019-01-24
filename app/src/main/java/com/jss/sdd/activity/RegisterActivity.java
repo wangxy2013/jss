@@ -22,6 +22,7 @@ import com.jss.sdd.http.HttpRequest;
 import com.jss.sdd.http.IRequestListener;
 import com.jss.sdd.parse.ResultHandler;
 import com.jss.sdd.utils.AESUtils;
+import com.jss.sdd.utils.ConfigManager;
 import com.jss.sdd.utils.ConstantUtil;
 import com.jss.sdd.utils.ToastUtil;
 import com.jss.sdd.utils.Urls;
@@ -65,8 +66,6 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
     ImageView ivHidePwd1;
     @BindView(R.id.et_pwd1)
     ClearEditText etPwd1;
-    @BindView(R.id.btn_register)
-    Button btnRegister;
     @BindView(R.id.ll_register_three)
     LinearLayout llRegisterThree;
     @BindView(R.id.tv_agreement)
@@ -96,6 +95,9 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
             {
                 case REGISTER_SUCCESS:
                     ToastUtil.show(RegisterActivity.this, "注册成功");
+                    ConfigManager.instance().setMobile(etPhone.getText().toString());
+                    startActivity(new Intent(RegisterActivity.this, LabelsActivity.class));
+                    finish();
                     break;
 
 
@@ -213,6 +215,7 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
         {
             if (i == step)
             {
+
                 mLinearLayoutList.get(step).setVisibility(View.VISIBLE);
             }
             else
@@ -305,8 +308,7 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
                 }
                 break;
             case R.id.btn_register:
-
-
+                registerAction();
                 break;
             case R.id.tv_agreement:
                 startActivity(new Intent(RegisterActivity.this, WebViewActivity.class).putExtra(WebViewActivity.EXTRA_URL, "http://www.baidu.com"));
@@ -344,7 +346,6 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
 
     private void registerAction()
     {
-        showProgressDialog();
         try
         {
             String phone = etPhone.getText().toString();
@@ -384,20 +385,20 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
                 ToastUtil.show(RegisterActivity.this, "两次密码输入不一致");
                 return;
             }
-
+            showProgressDialog();
             Map<String, String> valuePairs = new HashMap<>();
             valuePairs.put("phone", phone);
             valuePairs.put("inviteCode", inviteCode);
             valuePairs.put("password", password);
             valuePairs.put("cpassword", cpassword);
-            valuePairs.put("origin ", origin);
-            valuePairs.put("phoneAuthCode ", phoneAuthCode);
-            valuePairs.put("nickName ", nickName);
+            valuePairs.put("origin", origin);
+            valuePairs.put("phoneAuthCode", phoneAuthCode);
+            valuePairs.put("nickName", nickName);
             Gson gson = new Gson();
             Map<String, String> postMap = new HashMap<>();
             postMap.put("json", gson.toJson(valuePairs));
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
-            DataRequest.instance().request(RegisterActivity.this, Urls.getRegisterUrl(), this, HttpRequest.POST, GET_CODE, postMap, new
+            DataRequest.instance().request(RegisterActivity.this, Urls.getRegisterUrl(), this, HttpRequest.POST, USER_REGISTER, postMap, new
                     ResultHandler());
 
         }

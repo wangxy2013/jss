@@ -41,6 +41,24 @@ public class Urls
         return HTTP_IP + "/twitter/mobile/register.action";
     }
 
+    //新增标签
+    public static String getAddMyLabelsUrl()
+    {
+        return HTTP_IP + "/twitter/mobile/addMyLabels.action";
+    }
+
+    //修改标签
+    public static String getModMyLabelsUrl()
+    {
+        return HTTP_IP + "/twitter/mobile/modMyLabels.action";
+    }
+    //获取标签
+    public static String getMyLabelsUrl()
+    {
+        return HTTP_IP + "/twitter/mobile/getMyLabels.action";
+    }
+
+
 
 
 

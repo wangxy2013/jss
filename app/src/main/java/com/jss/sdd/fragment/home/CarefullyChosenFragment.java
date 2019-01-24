@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.donkingliang.banner.CustomBanner;
 import com.google.gson.Gson;
 import com.jss.sdd.R;
+import com.jss.sdd.activity.LabelsActivity;
 import com.jss.sdd.activity.LoginActivity;
 import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
@@ -481,7 +482,7 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
         }
         else if (v == mGybkLayout)
         {
-            startActivity(new Intent(getActivity(), LoginActivity.class));
+            startActivity(new Intent(getActivity(), LabelsActivity.class));
         }
         else if (v == mXsmsLayout)
         {

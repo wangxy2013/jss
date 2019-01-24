@@ -118,4 +118,16 @@
         <!-- 指定消失的动画xml  -->
     </style>
 
+
+    <style name="label_font">
+        <item name="android:textSize">@dimen/t12</item>
+        <item name="android:textColor">@drawable/label_font_selector</item>
+        <item name="android:paddingBottom">@dimen/dm_3</item>
+        <item name="android:paddingTop">@dimen/dm_3</item>
+        <item name="android:background">@drawable/bg_label_selector</item>
+        <item name="android:layout_marginRight">@dimen/dm_7</item>
+        <item name="android:layout_marginLeft">@dimen/dm_7</item>
+    </style>
+
+
 </resources>
