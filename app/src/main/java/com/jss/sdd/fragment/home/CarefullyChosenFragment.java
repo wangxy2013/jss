@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.donkingliang.banner.CustomBanner;
 import com.google.gson.Gson;
 import com.jss.sdd.R;
+import com.jss.sdd.activity.LoginActivity;
 import com.jss.sdd.activity.RecommendActivity;
 import com.jss.sdd.adapter.GoodsAdapter;
 import com.jss.sdd.entity.GoodsInfo;
@@ -52,10 +53,11 @@ import butterknife.Unbinder;
 /***
  * 精选
  */
+
 /***
  * 精选
  */
-public  class CarefullyChosenFragment extends BaseFragment implements IRequestListener
+public class CarefullyChosenFragment extends BaseFragment implements IRequestListener
 {
 
     private SwipeRefreshLayout mRefreshLayout;
@@ -134,8 +136,7 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
 
         if (rootView == null)
@@ -213,7 +214,6 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
         mRefreshLayout.setOnRefreshListener(mRefreshListener); // 刷新监听。
         mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         mRecyclerView.setLoadMoreListener(mLoadMoreListener); // 加载更多的监听。
-
 
 
     }
@@ -381,8 +381,7 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
     /**
      * 刷新。
      */
-    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout
-            .OnRefreshListener()
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
     {
         @Override
         public void onRefresh()
@@ -394,36 +393,13 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
     /**
      * 加载更多。
      */
-    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView
-            .LoadMoreListener()
+    private SwipeMenuRecyclerView.LoadMoreListener mLoadMoreListener = new SwipeMenuRecyclerView.LoadMoreListener()
     {
         @Override
         public void onLoadMore()
         {
             pageIndex += 1;
             getGoodsRequest();
-            //            mRecyclerView.postDelayed(new Runnable()
-            //            {
-            //                @Override
-            //                public void run()
-            //                {
-            //                    List<GoodsInfo> strings = createDataList(mAdapter.getItemCount());
-            //                    goodsInfoList.addAll(strings);
-            //                    // notifyItemRangeInserted()或者notifyDataSetChanged().
-            //                    mAdapter.notifyItemRangeInserted(goodsInfoList.size() - strings
-            // .size(), strings.size());
-            //
-            //                    // 数据完更多数据，一定要掉用这个方法。
-            //                    // 第一个参数：表示此次数据是否为空。
-            //                    // 第二个参数：表示是否还有更多数据。
-            //                    mRecyclerView.loadMoreFinish(false, true);
-            //
-            //                    // 如果加载失败调用下面的方法，传入errorCode和errorMessage。
-            //                    // errorCode随便传，你自定义LoadMoreView时可以根据errorCode判断错误类型。
-            //                    // errorMessage是会显示到loadMoreView上的，用户可以看到。
-            //                    // mRecyclerView.loadMoreError(0, "请求网络失败");
-            //                }
-            //            }, 1000);
         }
     };
 
@@ -471,8 +447,8 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
 
             postMap.put("sessionId", mRandomReqNo);
             postMap.put("encryptID", AESUtils.Encrypt(encryptStr, AESUtils.KEY));
-            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this,
-                    HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new GoodsListHandler());
+            DataRequest.instance().request(getActivity(), Urls.getFindMbGoodsListUrl(), this, HttpRequest.POST, GET_GOODS_LIST_JX, postMap, new
+                    GoodsListHandler());
         }
         catch (Exception e)
         {
@@ -489,18 +465,15 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
 
         if (v == mJrtjLayout)
         {
-            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
-                    ConstantUtil.LABEL_JRTJ));
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JRTJ));
         }
         else if (v == mFreeLayout)
         {
-            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
-                    ConstantUtil.LABEL_99));
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_99));
         }
         else if (v == mJdpgLayout)
         {
-            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL",
-                    ConstantUtil.LABEL_JDPG));
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JDPG));
         }
         else if (v == mJdzyLayout)
         {
@@ -508,7 +481,7 @@ public  class CarefullyChosenFragment extends BaseFragment implements IRequestLi
         }
         else if (v == mGybkLayout)
         {
-
+            startActivity(new Intent(getActivity(), LoginActivity.class));
         }
         else if (v == mXsmsLayout)
         {

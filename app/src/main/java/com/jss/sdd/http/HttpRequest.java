@@ -1,10 +1,12 @@
 package com.jss.sdd.http;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 
 import com.jss.sdd.parse.JsonHandler;
 import com.jss.sdd.utils.LogUtil;
+import com.jss.sdd.utils.StringUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -162,16 +164,17 @@ public class HttpRequest implements Runnable
 
         String json = valuePair.get("json");
         String encryptID = valuePair.get("encryptID");
-        String sessionId= valuePair.get("sessionId");
+        String sessionId = valuePair.get("sessionId");
+        if (TextUtils.isEmpty(sessionId))
+        {
+            sessionId = StringUtils.getRandomReqNo(32);
+        }
         //MediaType  设置Content-Type 标头中包含的媒体类型值
         RequestBody requestBody = FormBody.create(MediaType.parse("application/json; " + "charset=utf-8"), json);
 
         Request request = new Request.Builder().url(urlRequest)//请求的url
-                .post(requestBody).addHeader("Accept", "*/*")
-                .addHeader("platform", "3")
-                .addHeader("encryptID", encryptID)
-                .addHeader("session_id", sessionId)
-                .build();
+                .post(requestBody).addHeader("Accept", "*/*").addHeader("platform", "3").addHeader("encryptID", encryptID).addHeader("session_id",
+                        sessionId).build();
         Response response = okHttpClient.newCall(request).execute();
         return response;
 

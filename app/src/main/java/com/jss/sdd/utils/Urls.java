@@ -29,6 +29,20 @@ public class Urls
         return HTTP_IP + "/twitter/malls/findMbGoodsList.action";
     }
 
+    //短信验证接口
+    public static String getSendSmsUrl()
+    {
+        return HTTP_IP + "/twitter/mobile/sendSms.action";
+    }
+
+    //注册
+    public static String getRegisterUrl()
+    {
+        return HTTP_IP + "/twitter/mobile/register.action";
+    }
+
+
+
 
 }
 

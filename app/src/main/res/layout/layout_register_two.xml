@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_register_two"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_110"
+        android:gravity="center"
+        android:text="请输入验证码"
+        android:textColor="@color/black"
+        android:textSize="@dimen/t20" />
+
+    <com.tuo.customview.VerificationCodeView
+        android:id="@+id/verificationCodeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_50"
+        app:icv_et_number="6"
+        app:icv_et_text_size="@dimen/t14"
+        app:icv_et_width="40dp" />
+
+    <Button
+        android:id="@+id/btn_verification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dm_50"
+        android:layout_marginTop="@dimen/dm_50"
+        android:layout_marginRight="@dimen/dm_50"
+        android:background="@drawable/btn_register_selector"
+        android:enabled="false"
+        android:text="下一步"
+        android:textColor="@color/white"
+        android:textSize="@dimen/t16" />
+</LinearLayout>

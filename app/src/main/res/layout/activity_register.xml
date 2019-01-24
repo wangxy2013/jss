@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_head" />
+
+    <include layout="@layout/layout_register_one" />
+
+    <include layout="@layout/layout_register_two" />
+
+    <include layout="@layout/layout_register_three" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_20"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册代表您已同意"
+            android:textColor="@color/blackE"
+            android:textSize="@dimen/t14" />
+
+        <TextView
+            android:id="@+id/tv_agreement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="《京搜搜APP用户协议》"
+            android:textColor="@color/orange"
+            android:textSize="@dimen/t14" />
+    </LinearLayout>
+
+</LinearLayout>

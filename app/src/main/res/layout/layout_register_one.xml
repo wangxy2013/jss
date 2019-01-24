@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_register_one"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dm_110"
+        android:gravity="center"
+        android:text="请输入手机号码"
+        android:textColor="@color/black"
+        android:textSize="@dimen/t20" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_30"
+        android:layout_marginLeft="@dimen/dm_100"
+        android:layout_marginTop="@dimen/dm_72"
+        android:layout_marginRight="@dimen/dm_100">
+
+        <TextView
+            android:id="@+id/tv_86"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="+86"
+            android:textColor="@color/black"
+            android:textSize="@dimen/t16" />
+
+        <com.jss.sdd.widget.ClearEditText
+            android:id="@+id/et_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv_86"
+            android:background="@color/transparent"
+            android:gravity="center_vertical"
+            android:hint="请输入手机号"
+            android:paddingLeft="@dimen/dm_5"
+            android:textColor="@color/black"
+            android:textSize="@dimen/t16"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="55dp"
+        android:layout_marginRight="55dp"
+        android:background="@color/line" />
+
+    <Button
+        android:id="@+id/btn_get_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dm_50"
+        android:layout_marginTop="@dimen/dm_50"
+        android:layout_marginRight="@dimen/dm_50"
+        android:background="@drawable/btn_register_selector"
+        android:enabled="false"
+        android:text="获取验证码"
+        android:textColor="@color/white"
+        android:textSize="@dimen/t16" />
+</LinearLayout>
