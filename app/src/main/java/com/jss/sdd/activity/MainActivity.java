@@ -41,6 +41,7 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initViews(Bundle savedInstanceState)
     {
+        StatusBarUtil.setTransparentStatusBar(this);
         setContentView(R.layout.activity_main);
         StatusBarUtil.setStatusBarBackground(this, R.color.main_bg);
         StatusBarUtil.StatusBarLightMode(MainActivity.this, false);

@@ -464,25 +464,29 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
     {
         super.onClick(v);
 
+        //今日推荐
         if (v == mJrtjLayout)
         {
             startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JRTJ));
         }
+        //99包邮
         else if (v == mFreeLayout)
         {
             startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_99));
         }
+        //京东拼购
         else if (v == mJdpgLayout)
         {
             startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JDPG));
         }
         else if (v == mJdzyLayout)
         {
-
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JDZY));
         }
         else if (v == mGybkLayout)
         {
-            startActivity(new Intent(getActivity(), LabelsActivity.class));
+           // startActivity(new Intent(getActivity(), LabelsActivity.class));
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_GYBK));
         }
         else if (v == mXsmsLayout)
         {
@@ -490,7 +494,7 @@ public class CarefullyChosenFragment extends BaseFragment implements IRequestLis
         }
         else if (v == mJdpsLayout)
         {
-
+            startActivity(new Intent(getActivity(), RecommendActivity.class).putExtra("LABEL", ConstantUtil.LABEL_JDPS));
         }
         else if (v == mFxzqLayout)
         {

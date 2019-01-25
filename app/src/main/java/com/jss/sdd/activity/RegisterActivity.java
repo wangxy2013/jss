@@ -141,6 +141,7 @@ public class RegisterActivity extends BaseActivity implements IRequestListener
     @Override
     protected void initViews(Bundle savedInstanceState)
     {
+        StatusBarUtil.setTransparentStatusBar(this);
         setContentView(R.layout.activity_register);
         StatusBarUtil.setStatusBarBackground(this, R.color.main_bg);
         StatusBarUtil.StatusBarLightMode(RegisterActivity.this, false);

@@ -189,7 +189,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dm_5"
-                    android:text="京东配送"
+                    android:text="京仓配送"
                     android:textColor="@color/blackC"
                     android:textSize="@dimen/t12" />
             </LinearLayout>

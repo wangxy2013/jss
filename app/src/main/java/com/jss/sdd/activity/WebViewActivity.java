@@ -78,6 +78,7 @@ public class WebViewActivity extends BaseActivity
     @Override
     protected void initViews(Bundle savedInstanceState)
     {
+        StatusBarUtil.setTransparentStatusBar(this);
         setContentView(R.layout.activity_webview);
         StatusBarUtil.setStatusBarBackground(this, R.drawable.main_bg);
         StatusBarUtil.StatusBarLightMode(WebViewActivity.this, false);

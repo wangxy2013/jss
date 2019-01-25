@@ -12,11 +12,30 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
+ * 状态栏工具类
  */
 public class StatusBarUtil
 {
 
     private static SystemBarTintManager tintManager;
+
+    //解决7.0状态栏蒙层问题
+    public static void setTransparentStatusBar(Activity activity)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        {
+            try
+            {
+                Class decorViewClazz = Class.forName("com.android.internal.policy.DecorView");
+                Field field = decorViewClazz.getDeclaredField("mSemiTransparentStatusBarColor");
+                field.setAccessible(true);
+                field.setInt(activity.getWindow().getDecorView(), Color.TRANSPARENT);  //改为透明
+            }
+            catch (Exception e)
+            {
+            }
+        }
+    }
 
     /**
      * 修改状态栏为全透明
@@ -28,8 +47,7 @@ public class StatusBarUtil
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
         {
             Window window = activity.getWindow();
-            window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
     }
 
@@ -62,6 +80,7 @@ public class StatusBarUtil
             tintManager.setStatusBarTintDrawable(MyDrawable);*/
         }
     }
+
     /**
      * 修改状态栏颜色，支持4.4以上版本,保持沉浸式状态
      *
@@ -138,8 +157,7 @@ public class StatusBarUtil
             Window window = activity.getWindow();
             if (navigationBarState)
             {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                        | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                 //添加Flag把状态栏设为可绘制模式
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 int uiFlags = 0;
@@ -219,10 +237,8 @@ public class StatusBarUtil
             try
             {
                 WindowManager.LayoutParams lp = window.getAttributes();
-                Field darkFlag = WindowManager.LayoutParams.class
-                        .getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
-                Field meizuFlags = WindowManager.LayoutParams.class
-                        .getDeclaredField("meizuFlags");
+                Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
+                Field meizuFlags = WindowManager.LayoutParams.class.getDeclaredField("meizuFlags");
                 darkFlag.setAccessible(true);
                 meizuFlags.setAccessible(true);
                 int bit = darkFlag.getInt(null);
@@ -238,7 +254,8 @@ public class StatusBarUtil
                 meizuFlags.setInt(lp, value);
                 window.setAttributes(lp);
                 result = true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
 
             }
@@ -275,7 +292,8 @@ public class StatusBarUtil
                     extraFlagField.invoke(window, 0, darkModeFlag);//清除黑色字体
                 }
                 result = true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
 
             }

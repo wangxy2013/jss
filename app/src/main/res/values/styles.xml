@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="BaseTheme" parent="Theme.AppCompat.Light">
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowAnimationStyle">@style/window_animation</item>
         <item name="android:textColorHint">#aaaaaa</item>

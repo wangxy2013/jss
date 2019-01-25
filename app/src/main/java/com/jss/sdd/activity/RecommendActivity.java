@@ -54,9 +54,9 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
 {
     private View mTopView;
 
+    private RelativeLayout mTopLayout;
     private ImageView mBackIv;
     private ImageView mTitleIv;
-
     private StickyScrollView mNestedScrollView;
     private SwipeRefreshLayout mRefreshLayout;
     private SwipeMenuRecyclerView mRecyclerView;
@@ -173,10 +173,21 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
     @Override
     protected void initViews(Bundle savedInstanceState)
     {
+        StatusBarUtil.setTransparentStatusBar(this);
         setContentView(R.layout.activity_recomend);
-        StatusBarUtil.setStatusBarBackground(this, R.drawable.activity_main_bg);
-        StatusBarUtil.StatusBarLightMode(RecommendActivity.this, false);
 
+        if (ConstantUtil.LABEL_GYBK.equals(label) || ConstantUtil.LABEL_JDPS.equals(label))
+        {
+            StatusBarUtil.setStatusBarBackground(this, R.drawable.bg_white);
+            StatusBarUtil.StatusBarLightMode(RecommendActivity.this, true);
+        }
+        else
+        {
+            StatusBarUtil.setStatusBarBackground(this, R.drawable.activity_main_bg);
+            StatusBarUtil.StatusBarLightMode(RecommendActivity.this, false);
+        }
+
+        mTopLayout= (RelativeLayout) findViewById(R.id.rl_top);
         mBackIv = (ImageView) findViewById(R.id.iv_back);
         mTitleIv = (ImageView) findViewById(R.id.iv_title);
         mTopView = findViewById(R.id.top_view);
@@ -208,6 +219,7 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
     protected void initEvent()
     {
         //top事件
+        mBackIv.setOnClickListener(this);
         mCategoryIv.setOnClickListener(this);
         mComprehensiveLayout.setOnClickListener(this);
         mPriceLayout.setOnClickListener(this);
@@ -245,17 +257,37 @@ public class RecommendActivity extends BaseActivity implements IRequestListener
         if (ConstantUtil.LABEL_99.equals(label))
         {
             mTitleIv.setImageResource(R.drawable.ic_title_99);
+            initAd();
         }
         else if (ConstantUtil.LABEL_JDPG.equals(label))
         {
             mTitleIv.setImageResource(R.drawable.ic_title_jdpg);
+            initAd();
         }
         else if (ConstantUtil.LABEL_JRTJ.equals(label))
         {
             mTitleIv.setImageResource(R.drawable.ic_title_jrtj);
+            initAd();
         }
+        else if (ConstantUtil.LABEL_JDZY.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_jdzy);
+            initAd();
+        }
+        else if (ConstantUtil.LABEL_GYBK.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_gybk);
+            mTopLayout.setBackgroundResource(R.drawable.bg_white);
+            mBackIv.setImageResource(R.drawable.ic_black_back);
+        }
+        else if (ConstantUtil.LABEL_JDPS.equals(label))
+        {
+            mTitleIv.setImageResource(R.drawable.ic_title_jcps);
+            mTopLayout.setBackgroundResource(R.drawable.bg_white);
+            mBackIv.setImageResource(R.drawable.ic_black_back);
+        }
+
         updateType();
-        initAd();
         loadData();
     }
 
